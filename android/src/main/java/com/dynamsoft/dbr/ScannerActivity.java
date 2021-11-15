@@ -84,7 +84,7 @@ public class ScannerActivity extends AppCompatActivity {
                     TextResult result = textResults[0];
                     Intent intent = new Intent();
                     intent.putExtra("barcodeText", result.barcodeText);
-                    intent.putExtra("barcodeFormat", result.barcodeFormat);
+                    intent.putExtra("barcodeFormat", result.barcodeFormatString);
                     intent.putExtra("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
                     setResult(0, intent);
                     try {

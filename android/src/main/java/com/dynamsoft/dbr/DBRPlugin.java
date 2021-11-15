@@ -56,7 +56,7 @@ public class DBRPlugin extends Plugin {
         }
         JSObject ret = new JSObject();
         ret.put("barcodeText", result.getData().getStringExtra("barcodeText"));
-        ret.put("barcodeFormat", result.getData().getStringExtra("barcodeText"));
+        ret.put("barcodeFormat", result.getData().getStringExtra("barcodeFormat"));
         ret.put("barcodeBytesBase64", result.getData().getStringExtra("barcodeBytesBase64"));
         call.resolve(ret);
     }

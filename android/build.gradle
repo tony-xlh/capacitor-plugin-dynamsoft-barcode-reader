@@ -11,7 +11,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:4.0.1'
     }
 }
 
@@ -45,14 +45,24 @@ repositories {
     google()
     jcenter()
     mavenCentral()
+    maven {
+        url "https://download2.dynamsoft.com/maven/dbr/aar"
+    }
+    maven {
+        url "https://download2.dynamsoft.com/maven/dce/aar"
+    }
 }
 
 
 dependencies {
+    implementation 'com.dynamsoft:dynamsoftcameraenhancer:2.0.0@aar'
+    implementation 'com.dynamsoft:dynamsoftbarcodereader:8.8.0@aar'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+
 }

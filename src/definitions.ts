@@ -1,3 +1,8 @@
 export interface DBRPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  scan(options: { license: string,
+                  organizationID: string,
+                  dceLicense:string})
+                  : Promise<{ barcodeText: string,
+                      barcodeFormat:string,
+                     barcodeBytesBase64: string}>;
 }

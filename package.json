@@ -74,5 +74,9 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "@types/node": "^16.11.7",
+    "dynamsoft-javascript-barcode": "^8.6.3"
   }
 }

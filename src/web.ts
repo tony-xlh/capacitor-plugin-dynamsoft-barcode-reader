@@ -5,7 +5,7 @@ import DBR, { BarcodeScanner, TextResult } from "dynamsoft-javascript-barcode";
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.6.3/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
-  private scannResult!: TextResult;
+  private scanningResult!: TextResult;
   private scanner!: BarcodeScanner;
 
   async scan(_options:{ license: string,
@@ -13,28 +13,31 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     dceLicense:string}): Promise<{ barcodeText: string,
                           barcodeFormat:string,
                           barcodeBytesBase64: string}> {
-
-    if ("organizationID" in _options){
-      if (DBR.isWasmLoaded()===false){
-        DBR.BarcodeScanner.organizationID = _options["organizationID"];
-        console.log("set organization ID");
-      } 
+    this.scanningResult = undefined!;
+    if (this.scanner === undefined){
+      if ("organizationID" in _options){
+        if (DBR.isWasmLoaded()===false){
+          DBR.BarcodeScanner.organizationID = _options["organizationID"];
+          console.log("set organization ID");
+        } 
+      }
+      this.scanner = await DBR.BarcodeScanner.createInstance();
+    }else{
+      console.log("Scanner already initialized.");
     }
-    
-    this.scanner = await DBR.BarcodeScanner.createInstance();
     
     this.scanner.onFrameRead = results => {
       if (results.length>0){
         this.scanner.close();
         this.scanner.hide();
-        this.scannResult = results[0];
+        this.scanningResult = results[0];
       }
    };
    
     await this.scanner.show();
     let success:boolean = await this.getResult();
     if (success){
-      return {"barcodeText":this.scannResult.barcodeText,"barcodeFormat":this.scannResult.barcodeFormatString,"barcodeBytesBase64":this.arrayBufferToBase64(this.scannResult.barcodeBytes)};
+      return {"barcodeText":this.scanningResult.barcodeText,"barcodeFormat":this.scanningResult.barcodeFormatString,"barcodeBytesBase64":this.arrayBufferToBase64(this.scanningResult.barcodeBytes)};
     } else{
       throw new Error("Failed to scan");
     }
@@ -42,7 +45,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   private getResult(): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
-        while (this.scannResult==undefined) {
+        while (this.scanningResult===undefined) {
           await this.sleep(500);
         }
         resolve(true);

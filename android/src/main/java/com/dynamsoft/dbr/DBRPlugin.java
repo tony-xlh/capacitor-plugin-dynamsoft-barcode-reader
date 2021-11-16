@@ -54,11 +54,14 @@ public class DBRPlugin extends Plugin {
         if (call == null) {
             return;
         }
-        JSObject ret = new JSObject();
-        ret.put("barcodeText", result.getData().getStringExtra("barcodeText"));
-        ret.put("barcodeFormat", result.getData().getStringExtra("barcodeFormat"));
-        ret.put("barcodeBytesBase64", result.getData().getStringExtra("barcodeBytesBase64"));
-        call.resolve(ret);
+        try{
+            JSObject ret = new JSObject();
+            ret.put("barcodeText", result.getData().getStringExtra("barcodeText"));
+            ret.put("barcodeFormat", result.getData().getStringExtra("barcodeFormat"));
+            ret.put("barcodeBytesBase64", result.getData().getStringExtra("barcodeBytesBase64"));
+            call.resolve(ret);
+        }catch (Exception e){
+            call.reject(e.getMessage());
+        }
     }
-
 }

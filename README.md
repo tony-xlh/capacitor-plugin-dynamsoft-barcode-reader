@@ -9,6 +9,11 @@ npm install capacitor-plugin-dynamsoft-barcode-reader
 npx cap sync
 ```
 
+Download the frameworks for iOS and put them under the plugin's folder:
+
+* [Dynamsoft Camera Enhancer](https://www.dynamsoft.com/camera-enhancer/docs/introduction/)
+* [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/)
+
 ## API
 
 <docgen-index>

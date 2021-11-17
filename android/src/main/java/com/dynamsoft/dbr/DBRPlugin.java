@@ -140,4 +140,18 @@ public class DBRPlugin extends Plugin {
         bridge.getWebView().setBackgroundColor(Color.TRANSPARENT);
         //bridge.getWebView().evaluateJavascript("document.body.style.display='none'",null);
     }
+
+    @PluginMethod
+    public void toggleTorch(PluginCall call) {
+        try{
+            if (call.getBoolean("on",true)){
+                mCameraEnhancer.turnOnTorch();
+            }else {
+                mCameraEnhancer.turnOffTorch();
+            }
+            call.resolve();
+        }catch (Exception e){
+            call.reject(e.getMessage());
+        }
+    }
 }

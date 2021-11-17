@@ -87,13 +87,8 @@ public class ScannerActivity extends AppCompatActivity {
                     intent.putExtra("barcodeFormat", result.barcodeFormatString);
                     intent.putExtra("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
                     setResult(0, intent);
-                    try {
-                        reader.StopCameraEnhancer();
-                        mCameraEnhancer.close();
-                        reader.destroy();
-                    } catch (CameraEnhancerException e) {
-                        e.printStackTrace();
-                    }
+                    reader.StopCameraEnhancer();
+                    reader.destroy();
                     finish();
                 }
             }
@@ -108,15 +103,15 @@ public class ScannerActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-    // Start video barcode reading
-        reader.StartCameraEnhancer();
         super.onResume();
+        // Start video barcode reading
+        reader.StartCameraEnhancer();
     }
 
     @Override
     public void onPause() {
+        super.onPause();
         // Stop video barcode reading
         reader.StopCameraEnhancer();
-        super.onPause();
     }
 }

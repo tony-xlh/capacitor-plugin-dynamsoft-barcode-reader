@@ -15,6 +15,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
+
 
 @CapacitorPlugin(name = "DBR")
 public class DBRPlugin extends Plugin {
@@ -26,27 +30,12 @@ public class DBRPlugin extends Plugin {
     private String currentCallbackID;
     @PluginMethod
     public void scan(PluginCall call) {
-        String dceLicense = "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9";
-        String organizationID = "200001";
-        String license = "";
-        dceLicense = call.getString("dceLicense",dceLicense);
-        organizationID = call.getString("organizationID",organizationID);
-        license = call.getString("license",license);
         call.setKeepAlive(true);
         currentCallbackID = call.getCallbackId();
-        init(license,organizationID,dceLicense);
+        init();
     }
 
     class InitThread implements Runnable{
-        String dcelicense;
-        String license;
-        String organizationID;
-        public InitThread(String license, String organizationID, String dcelicense) {
-            this.license = license;
-            this.organizationID = organizationID;
-            this.dcelicense = dcelicense;
-        }
-
         @Override
         public void run(){
             boolean notInitialized = false;
@@ -54,8 +43,8 @@ public class DBRPlugin extends Plugin {
                 notInitialized = true;
             }
             if (notInitialized){
-                initDBR(license,organizationID);
-                initDCE(dcelicense);
+                initDBR();
+                initDCE();
                 TextResultCallback mTextResultCallback = new TextResultCallback() {
                     // Obtain the recognized barcode results and display.
                     @Override
@@ -91,27 +80,27 @@ public class DBRPlugin extends Plugin {
     }
 
 
-    private void init(String license, String organizationID,String dcelicense){
-        InitThread t = new InitThread(license,organizationID,dcelicense);
+    private void init(){
+        InitThread t = new InitThread();
         getActivity().runOnUiThread(t);
     }
 
-    private void initDBR(String license, String organizationID){
+    private void initDBR(){
         try {
             reader = new BarcodeReader();
         } catch (BarcodeReaderException e) {
             e.printStackTrace();
         }
-
+        PluginCall call = bridge.getSavedCall(currentCallbackID);
         DMDLSConnectionParameters dbrParameters = new DMDLSConnectionParameters();
-        if (!license.equals("")){
+        if (call.hasOption("license")){
             try {
-                reader.initLicense(license);
+                reader.initLicense(call.getString("license"));
             } catch (BarcodeReaderException e) {
                 e.printStackTrace();
             }
         }else{
-            dbrParameters.organizationID = organizationID;
+            dbrParameters.organizationID = call.getString("organizationID","200001");
             reader.initLicenseFromDLS(dbrParameters, new DBRDLSLicenseVerificationListener() {
                 @Override
                 public void DLSLicenseVerificationCallback(boolean isSuccessful, Exception e) {
@@ -123,7 +112,8 @@ public class DBRPlugin extends Plugin {
         }
     }
 
-    private void initDCE(String dceLicense){
+    private void initDCE(){
+        String dceLicense = bridge.getSavedCall(currentCallbackID).getString("dceLicense","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
         CameraEnhancer.initLicense(dceLicense, new DCELicenseVerificationListener() {
             @Override
             public void DCELicenseVerificationCallback(boolean isSuccess, Exception error) {

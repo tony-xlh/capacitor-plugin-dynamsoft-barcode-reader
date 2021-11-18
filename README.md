@@ -20,6 +20,7 @@ Download the frameworks for iOS and put them under the plugin's folder:
 
 * [`scan(...)`](#scan)
 * [`toggleTorch(...)`](#toggletorch)
+* [`stopScan()`](#stopscan)
 
 </docgen-index>
 
@@ -50,6 +51,15 @@ toggleTorch(_options: { on: boolean; }) => Promise<void>
 | Param          | Type                          |
 | -------------- | ----------------------------- |
 | **`_options`** | <code>{ on: boolean; }</code> |
+
+--------------------
+
+
+### stopScan()
+
+```typescript
+stopScan() => Promise<void>
+```
 
 --------------------
 

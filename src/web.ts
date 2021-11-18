@@ -17,8 +17,16 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     } catch (e){
       throw new Error("Torch unsupported");
     }
-    
   }
+
+  async stopScan(){
+    try{
+      this.scanner.hide();
+    } catch (e){
+      throw e;
+    }
+  }
+
   async scan(_options:{ license: string,
     organizationID: string,
     dceLicense:string}): Promise<{ barcodeText: string,
@@ -33,18 +41,18 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
         } 
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
+      this.scanner.onFrameRead = results => {
+        if (results.length>0){
+          this.scanner.close();
+          this.scanner.hide();
+          this.scanningResult = results[0];
+        }
+     };
+      this.scanner.UIElement.getElementsByClassName("dbrScanner-btn-close")[0].remove();
     }else{
       console.log("Scanner already initialized.");
     }
     
-    this.scanner.onFrameRead = results => {
-      if (results.length>0){
-        this.scanner.close();
-        this.scanner.hide();
-        this.scanningResult = results[0];
-      }
-   };
-   
     await this.scanner.show();
     let success:boolean = await this.getResult();
     if (success){

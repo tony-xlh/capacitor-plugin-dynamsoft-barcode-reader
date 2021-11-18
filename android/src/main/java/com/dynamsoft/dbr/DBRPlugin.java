@@ -162,6 +162,18 @@ public class DBRPlugin extends Plugin {
         }
     }
 
+    @PluginMethod
+    public void stopScan(PluginCall call) {
+        try{
+            restoreWebViewBackground();
+            reader.PauseCameraEnhancer();
+            call.resolve();
+        }catch (Exception e){
+            call.reject(e.getMessage());
+        }
+    }
+
+
     @Override
     protected void handleOnPause() {
         if (reader!=null){

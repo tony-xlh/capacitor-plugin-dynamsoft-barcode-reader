@@ -6,4 +6,5 @@ export interface DBRPlugin {
                       barcodeFormat:string,
                      barcodeBytesBase64: string}>;
   toggleTorch(_options: {on: boolean}): Promise<void>;
+  stopScan(): Promise<void>;
 }

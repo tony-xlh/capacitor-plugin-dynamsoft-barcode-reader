@@ -42,7 +42,7 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "postinstall": "node downloadAndUnzip.js"
+    "postinstall": "npm install download && node downloadAndUnzip.js"
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",

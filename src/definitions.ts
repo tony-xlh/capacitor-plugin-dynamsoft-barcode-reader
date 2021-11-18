@@ -1,8 +1,9 @@
 export interface DBRPlugin {
-  scan(options: { license: string,
+  scan(_options: { license: string,
                   organizationID: string,
                   dceLicense:string})
                   : Promise<{ barcodeText: string,
                       barcodeFormat:string,
                      barcodeBytesBase64: string}>;
+  toggleTorch(_options: {on: boolean}): Promise<void>;
 }

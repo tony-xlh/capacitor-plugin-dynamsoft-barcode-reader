@@ -7,7 +7,18 @@ DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barc
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private scanningResult!: TextResult;
   private scanner!: BarcodeScanner;
-
+  async toggleTorch(_options:{ on:boolean}){
+    try{
+      if (_options["on"]){
+        this.scanner.turnOnTorch();
+      }else{
+        this.scanner.turnOffTorch();
+      }
+    } catch (e){
+      throw new Error("Torch unsupported");
+    }
+    
+  }
   async scan(_options:{ license: string,
     organizationID: string,
     dceLicense:string}): Promise<{ barcodeText: string,
@@ -69,4 +80,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }
     return window.btoa( binary );
   }
+
+
 }

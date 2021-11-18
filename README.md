@@ -19,6 +19,7 @@ Download the frameworks for iOS and put them under the plugin's folder:
 <docgen-index>
 
 * [`scan(...)`](#scan)
+* [`toggleTorch(...)`](#toggletorch)
 
 </docgen-index>
 
@@ -28,14 +29,27 @@ Download the frameworks for iOS and put them under the plugin's folder:
 ### scan(...)
 
 ```typescript
-scan(options: { license: string; organizationID: string; dceLicense: string; }) => Promise<{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }>
+scan(_options: { license: string; organizationID: string; dceLicense: string; }) => Promise<{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }>
 ```
 
-| Param         | Type                                                                          |
-| ------------- | ----------------------------------------------------------------------------- |
-| **`options`** | <code>{ license: string; organizationID: string; dceLicense: string; }</code> |
+| Param          | Type                                                                          |
+| -------------- | ----------------------------------------------------------------------------- |
+| **`_options`** | <code>{ license: string; organizationID: string; dceLicense: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }&gt;</code>
+
+--------------------
+
+
+### toggleTorch(...)
+
+```typescript
+toggleTorch(_options: { on: boolean; }) => Promise<void>
+```
+
+| Param          | Type                          |
+| -------------- | ----------------------------- |
+| **`_options`** | <code>{ on: boolean; }</code> |
 
 --------------------
 

@@ -45,36 +45,40 @@ public class DBRPlugin extends Plugin {
                 notInitialized = true;
             }
             if (notInitialized){
-                initDBR();
-                initDCE();
-                TextResultCallback mTextResultCallback = new TextResultCallback() {
-                    // Obtain the recognized barcode results and display.
-                    @Override
-                    public void textResultCallback(int i, TextResult[] textResults, Object userData) {
-                        System.out.println("Found "+textResults.length+" barcode(s).");
-                        if (textResults.length>0){
-                            PluginCall call = bridge.getSavedCall(currentCallbackID);
-                            try{
-                                restoreWebViewBackground();
-                                TextResult result = textResults[0];
-                                JSObject ret = new JSObject();
-                                ret.put("barcodeText", result.barcodeText);
-                                ret.put("barcodeFormat", result.barcodeFormatString);
-                                ret.put("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
-                                reader.PauseCameraEnhancer();
-                                call.resolve(ret);
-                            }catch (Exception e){
-                                call.reject(e.getMessage());
+                try {
+                    initDBR();
+                    initDCE();
+                    TextResultCallback mTextResultCallback = new TextResultCallback() {
+                        // Obtain the recognized barcode results and display.
+                        @Override
+                        public void textResultCallback(int i, TextResult[] textResults, Object userData) {
+                            System.out.println("Found "+textResults.length+" barcode(s).");
+                            if (textResults.length>0){
+                                PluginCall call = bridge.getSavedCall(currentCallbackID);
+                                try{
+                                    restoreWebViewBackground();
+                                    TextResult result = textResults[0];
+                                    JSObject ret = new JSObject();
+                                    ret.put("barcodeText", result.barcodeText);
+                                    ret.put("barcodeFormat", result.barcodeFormatString);
+                                    ret.put("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
+                                    reader.PauseCameraEnhancer();
+                                    call.resolve(ret);
+                                }catch (Exception e){
+                                    call.reject(e.getMessage());
+                                }
                             }
                         }
-                    }
-                };
+                    };
 
-                DCESettingParameters dceSettingParameters = new DCESettingParameters();
-                dceSettingParameters.cameraInstance = mCameraEnhancer;
-                dceSettingParameters.textResultCallback = mTextResultCallback;
-                reader.SetCameraEnhancerParam(dceSettingParameters);
-                reader.StartCameraEnhancer();
+                    DCESettingParameters dceSettingParameters = new DCESettingParameters();
+                    dceSettingParameters.cameraInstance = mCameraEnhancer;
+                    dceSettingParameters.textResultCallback = mTextResultCallback;
+                    reader.SetCameraEnhancerParam(dceSettingParameters);
+                    reader.StartCameraEnhancer();
+                } catch (BarcodeReaderException e) {
+                    e.printStackTrace();
+                }
             }else{
                 reader.ResumeCameraEnhancer();
             }
@@ -87,20 +91,12 @@ public class DBRPlugin extends Plugin {
         getActivity().runOnUiThread(t);
     }
 
-    private void initDBR(){
-        try {
-            reader = new BarcodeReader();
-        } catch (BarcodeReaderException e) {
-            e.printStackTrace();
-        }
+    private void initDBR() throws BarcodeReaderException {
+        reader = new BarcodeReader();
         PluginCall call = bridge.getSavedCall(currentCallbackID);
         DMDLSConnectionParameters dbrParameters = new DMDLSConnectionParameters();
         if (call.hasOption("license")){
-            try {
-                reader.initLicense(call.getString("license"));
-            } catch (BarcodeReaderException e) {
-                e.printStackTrace();
-            }
+            reader.initLicense(call.getString("license"));
         }else{
             dbrParameters.organizationID = call.getString("organizationID","200001");
             reader.initLicenseFromDLS(dbrParameters, new DBRDLSLicenseVerificationListener() {
@@ -112,6 +108,11 @@ public class DBRPlugin extends Plugin {
                 }
             });
         }
+
+        if (call.hasOption("template")){
+            reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
+        }
+
     }
 
     private void initDCE(){

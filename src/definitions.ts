@@ -1,7 +1,8 @@
 export interface DBRPlugin {
-  scan(_options: { license: string,
-                  organizationID: string,
-                  dceLicense:string})
+  scan(_options: { license?: string,
+                  organizationID?: string,
+                  dceLicense?:string,
+                  template?:string})
                   : Promise<{ barcodeText: string,
                       barcodeFormat:string,
                      barcodeBytesBase64: string}>;

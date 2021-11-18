@@ -27,27 +27,31 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }
   }
 
-  async scan(_options:{ license: string,
-    organizationID: string,
-    dceLicense:string}): Promise<{ barcodeText: string,
+  async scan(_options:{ license?: string,
+    organizationID?: string,
+    dceLicense?:string,template?: string}): Promise<{ barcodeText: string,
                           barcodeFormat:string,
                           barcodeBytesBase64: string}> {
     this.scanningResult = undefined!;
     if (this.scanner === undefined){
-      if ("organizationID" in _options){
-        if (DBR.isWasmLoaded()===false){
-          DBR.BarcodeScanner.organizationID = _options["organizationID"];
-          console.log("set organization ID");
-        } 
+      if (_options.organizationID){
+        DBR.BarcodeScanner.organizationID = _options.organizationID;
+        console.log("set organization ID");
+      }else if (_options.license){
+        DBR.BarcodeScanner.productKeys = _options.license;
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
+      if (_options.template){
+        await this.scanner.initRuntimeSettingsWithString(_options.template);
+        console.log("Using template");
+      }
       this.scanner.onFrameRead = results => {
         if (results.length>0){
           this.scanner.close();
           this.scanner.hide();
           this.scanningResult = results[0];
         }
-     };
+      };
       this.scanner.UIElement.getElementsByClassName("dbrScanner-btn-close")[0].remove();
     }else{
       console.log("Scanner already initialized.");

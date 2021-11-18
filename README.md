@@ -30,12 +30,12 @@ Download the frameworks for iOS and put them under the plugin's folder:
 ### scan(...)
 
 ```typescript
-scan(_options: { license: string; organizationID: string; dceLicense: string; }) => Promise<{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }>
+scan(_options: { license?: string; organizationID?: string; dceLicense?: string; template?: string; }) => Promise<{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }>
 ```
 
-| Param          | Type                                                                          |
-| -------------- | ----------------------------------------------------------------------------- |
-| **`_options`** | <code>{ license: string; organizationID: string; dceLicense: string; }</code> |
+| Param          | Type                                                                                                |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| **`_options`** | <code>{ license?: string; organizationID?: string; dceLicense?: string; template?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }&gt;</code>
 

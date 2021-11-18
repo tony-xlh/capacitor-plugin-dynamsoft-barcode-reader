@@ -1,12 +1,14 @@
 package com.dynamsoft.dbr;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.dynamsoft.dce.CameraEnhancer;
+import com.dynamsoft.dce.CameraEnhancerException;
 import com.dynamsoft.dce.DCECameraView;
 import com.dynamsoft.dce.DCELicenseVerificationListener;
 import com.getcapacitor.JSObject;
@@ -53,13 +55,13 @@ public class DBRPlugin extends Plugin {
                         if (textResults.length>0){
                             PluginCall call = bridge.getSavedCall(currentCallbackID);
                             try{
-                                reader.StopCameraEnhancer();
-                                mCameraView.setVisibility(View.INVISIBLE);
+                                restoreWebViewBackground();
                                 TextResult result = textResults[0];
                                 JSObject ret = new JSObject();
                                 ret.put("barcodeText", result.barcodeText);
                                 ret.put("barcodeFormat", result.barcodeFormatString);
                                 ret.put("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
+                                reader.PauseCameraEnhancer();
                                 call.resolve(ret);
                             }catch (Exception e){
                                 call.reject(e.getMessage());
@@ -72,10 +74,10 @@ public class DBRPlugin extends Plugin {
                 dceSettingParameters.cameraInstance = mCameraEnhancer;
                 dceSettingParameters.textResultCallback = mTextResultCallback;
                 reader.SetCameraEnhancerParam(dceSettingParameters);
+                reader.StartCameraEnhancer();
             }else{
-                mCameraView.setVisibility(View.VISIBLE);
+                reader.ResumeCameraEnhancer();
             }
-            reader.StartCameraEnhancer();
         }
     }
 
@@ -137,8 +139,13 @@ public class DBRPlugin extends Plugin {
     }
 
     private void makeWebViewTransparent(){
+        bridge.getWebView().setTag(bridge.getWebView().getBackground());
         bridge.getWebView().setBackgroundColor(Color.TRANSPARENT);
         //bridge.getWebView().evaluateJavascript("document.body.style.display='none'",null);
+    }
+
+    private void restoreWebViewBackground(){
+        bridge.getWebView().setBackground((Drawable) bridge.getWebView().getTag());
     }
 
     @PluginMethod

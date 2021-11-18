@@ -1,6 +1,6 @@
 {
   "name": "capacitor-plugin-dynamsoft-barcode-reader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A capacitor plugin for Dynamsoft Barcode Reader",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -41,7 +41,8 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "postinstall": "node downloadAndUnzip.js"
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",
@@ -77,6 +78,7 @@
   },
   "dependencies": {
     "@types/node": "^16.11.7",
+    "download": "^8.0.0",
     "dynamsoft-javascript-barcode": "^8.6.3"
   }
 }

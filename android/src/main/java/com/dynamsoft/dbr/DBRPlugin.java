@@ -161,4 +161,20 @@ public class DBRPlugin extends Plugin {
             call.reject(e.getMessage());
         }
     }
+
+    @Override
+    protected void handleOnPause() {
+        if (reader!=null){
+            reader.StopCameraEnhancer();
+        }
+        super.handleOnPause();
+    }
+
+    @Override
+    protected void handleOnResume() {
+        if (reader!=null){
+            reader.StartCameraEnhancer();
+        }
+        super.handleOnResume();
+    }
 }

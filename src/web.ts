@@ -1,15 +1,15 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DBRPlugin, ScanResult } from './definitions';
+import type { DBRPlugin, ScanOptions, ScanResult } from './definitions';
 import DBR, { BarcodeScanner, TextResult } from "dynamsoft-javascript-barcode";
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.6.3/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private scanningResults!: ScanResult[];
   private scanner!: BarcodeScanner;
-  async toggleTorch(_options:{ on:boolean}){
+  async toggleTorch(options:{ on:boolean}){
     try{
-      if (_options["on"]){
+      if (options["on"]){
         this.scanner.turnOnTorch();
       }else{
         this.scanner.turnOffTorch();
@@ -31,9 +31,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return
   }
 
-  async scan(options:{ license?: string,
-    organizationID?: string,
-    dceLicense?:string,template?: string}): Promise<{results:ScanResult[]}> {
+  async scan(options:ScanOptions): Promise<{results:ScanResult[]}> {
     this.scanningResults = undefined!;
     if (this.scanner === undefined){
       if (options.organizationID){

@@ -39,12 +39,12 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 ### scan(...)
 
 ```typescript
-scan(options: { license?: string; organizationID?: string; dceLicense?: string; template?: string; }) => Promise<{ results: ScanResult[]; }>
+scan(options: ScanOptions) => Promise<{ results: ScanResult[]; }>
 ```
 
-| Param         | Type                                                                                                |
-| ------------- | --------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ license?: string; organizationID?: string; dceLicense?: string; template?: string; }</code> |
+| Param         | Type                                                |
+| ------------- | --------------------------------------------------- |
+| **`options`** | <code><a href="#scanoptions">ScanOptions</a></code> |
 
 **Returns:** <code>Promise&lt;{ results: ScanResult[]; }&gt;</code>
 
@@ -92,5 +92,15 @@ destroy() => Promise<void>
 | **`barcodeText`**        | <code>string</code> |
 | **`barcodeFormat`**      | <code>string</code> |
 | **`barcodeBytesBase64`** | <code>string</code> |
+
+
+#### ScanOptions
+
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`license`**        | <code>string</code> |
+| **`organizationID`** | <code>string</code> |
+| **`dceLicense`**     | <code>string</code> |
+| **`template`**       | <code>string</code> |
 
 </docgen-api>

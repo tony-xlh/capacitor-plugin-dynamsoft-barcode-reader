@@ -76,8 +76,6 @@ public class DBRPlugin extends Plugin {
                         public void textResultCallback(int i, TextResult[] textResults, Object userData) {
                             System.out.println("Found "+textResults.length+" barcode(s).");
                             if (textResults.length>0){
-
-                                restoreWebViewBackground();
                                 JSObject ret = new JSObject();
                                 JSArray array = new JSArray();
                                 for (TextResult tr:textResults){
@@ -90,6 +88,7 @@ public class DBRPlugin extends Plugin {
                                 ret.put("results",array);
                                 if (call.getBoolean("continuous",false)==false){
                                     reader.PauseCameraEnhancer();
+                                    restoreWebViewBackground();
                                 }
                                 notifyListeners("onFrameRead",ret);
                             }
@@ -103,6 +102,11 @@ public class DBRPlugin extends Plugin {
                     reader.StartCameraEnhancer();
                 }else{
                     reader.ResumeCameraEnhancer();
+                }
+                if (call.hasOption("template")){
+                    reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
+                }else{
+                    reader.resetRuntimeSettings();
                 }
                 call.resolve();
             } catch (BarcodeReaderException e) {
@@ -135,13 +139,6 @@ public class DBRPlugin extends Plugin {
                 }
             });
         }
-
-        if (call.hasOption("template")){
-            reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
-        }else{
-            reader.resetRuntimeSettings();
-        }
-
     }
 
     private void initDCE(){

@@ -1,6 +1,6 @@
 {
   "name": "capacitor-plugin-dynamsoft-barcode-reader",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A capacitor plugin for Dynamsoft Barcode Reader",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

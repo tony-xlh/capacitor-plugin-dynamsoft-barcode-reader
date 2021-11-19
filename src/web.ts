@@ -6,6 +6,7 @@ DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barc
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private scanner!: BarcodeScanner;
+  private continuous: boolean = false;
   async toggleTorch(options:{ on:boolean}){
     try{
       if (options["on"]){
@@ -31,6 +32,11 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async startScan(options:ScanOptions): Promise<void> {
+    if ("continuous" in options){
+      if (options.continuous!=undefined){
+        this.continuous=options.continuous;
+      }
+    }
     if (this.scanner === undefined){
       if (options.organizationID){
         DBR.BarcodeScanner.organizationID = options.organizationID;
@@ -41,7 +47,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       this.scanner = await DBR.BarcodeScanner.createInstance();
       this.scanner.onFrameRead = results => {
         if (results.length>0){
-          if (options.continuous == false){
+          if (this.continuous == false){
             this.scanner.close();
             this.scanner.hide();
           }
@@ -63,6 +69,9 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     if (options.template){
       await this.scanner.initRuntimeSettingsWithString(options.template);
       console.log("Using template");
+    }else{
+      console.log("Reset settings");
+      await this.scanner.resetRuntimeSettings();
     }
     await this.scanner.show();
   }

@@ -26,16 +26,21 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
             }
             dceView = nil
             dce = nil
-            var savedCall = bridge?.savedCall(withID: callBackId);
-            if (savedCall != nil){
-                savedCall = nil
-            }
+            nullifyPreviousCall()
             call.resolve()
         }
     }
     
-    @objc func scan(_ call: CAPPluginCall) {
+    func nullifyPreviousCall(){
+        var savedCall = bridge?.savedCall(withID: callBackId);
+        if (savedCall != nil){
+            savedCall = nil
+        }
+    }
+    
+    @objc func startScan(_ call: CAPPluginCall) {
         NSLog("scanning")
+        nullifyPreviousCall()
         call.keepAlive = true;
         bridge?.saveCall(call)
         callBackId = call.callbackId;
@@ -46,6 +51,17 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
         }else{
             dce.resume()
         }
+        let template = call.getString("template") ?? ""
+        NSLog("template")
+        NSLog(template)
+        if (template != ""){
+            var error: NSError? = NSError()
+            barcodeReader.initRuntimeSettings(with: template, conflictMode: EnumConflictMode.overwrite, error: &error)
+        }else{
+            var error: NSError? = NSError()
+            barcodeReader.resetRuntimeSettings(&error)
+        }
+        call.resolve()
     }
     
     func makeWebViewTransparent(){
@@ -97,14 +113,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
             dls.organizationID = call?.getString("organizationID","200001");
             barcodeReader = DynamsoftBarcodeReader(licenseFromDLS: dls, verificationDelegate: self)
         }
-        let template = call?.getString("template") ?? ""
-        NSLog("template")
-        NSLog(template)
-        if (template != ""){
-            var error: NSError? = NSError()
-            barcodeReader.initRuntimeSettings(with: template, conflictMode: EnumConflictMode.overwrite, error: &error)
-        }
-
     }
     
     func configurationDCE() {
@@ -130,6 +138,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
         // Bind the Camera Enhancer instance to the Barcode Reader instance.
         barcodeReader.setCameraEnhancerPara(para)
     }
+    
     public func dlsLicenseVerificationCallback(_ isSuccess: Bool, error: Error?) {
         var msg:String? = nil
         if(error != nil)
@@ -158,12 +167,9 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
         let count = results?.count ?? 0
         if count > 0 {
             NSLog("Found barcodes")
-            dce.pause()
-            restoreWebViewBackground()
             let call = bridge?.savedCall(withID: callBackId)
             var ret = PluginCallResultData()
             let array = NSMutableArray();
-
             for index in 0..<count {
                 let tr = results![index]
                 var result = PluginCallResultData()
@@ -173,7 +179,12 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
                 array.add(result)
             }
             ret["results"]=array
-            call?.resolve(ret)
+            notifyListeners("onFrameRead", data: ret)
+            let continuous = call?.getBool("continuous", false)
+            if (continuous==false){
+                dce.pause()
+                restoreWebViewBackground()
+            }
         }
     }
     

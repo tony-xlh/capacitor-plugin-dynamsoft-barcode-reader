@@ -5,7 +5,6 @@ import DBR, { BarcodeScanner, TextResult } from "dynamsoft-javascript-barcode";
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.6.3/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
-  private scanningResults!: ScanResult[];
   private scanner!: BarcodeScanner;
   async toggleTorch(options:{ on:boolean}){
     try{
@@ -31,8 +30,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return
   }
 
-  async scan(options:ScanOptions): Promise<{results:ScanResult[]}> {
-    this.scanningResults = undefined!;
+  async startScan(options:ScanOptions): Promise<void> {
     if (this.scanner === undefined){
       if (options.organizationID){
         DBR.BarcodeScanner.organizationID = options.organizationID;
@@ -47,8 +45,10 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       }
       this.scanner.onFrameRead = results => {
         if (results.length>0){
-          this.scanner.close();
-          this.scanner.hide();
+          if (options.continuous == false){
+            this.scanner.close();
+            this.scanner.hide();
+          }
           var scanResults = [];
           for (let index = 0; index < results.length; index++) {
             let result:TextResult = results[index];
@@ -56,7 +56,8 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
             scanResult = {barcodeText:result.barcodeText,barcodeFormat:result.barcodeFormatString,barcodeBytesBase64:this.arrayBufferToBase64(result.barcodeBytes)}
             scanResults.push(scanResult)
           }
-          this.scanningResults = scanResults;
+          var ret = {"results":scanResults};
+          this.notifyListeners("onFrameRead", ret);
         }
       };
       this.scanner.UIElement.getElementsByClassName("dbrScanner-btn-close")[0].remove();
@@ -65,29 +66,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }
     
     await this.scanner.show();
-    let success:boolean = await this.getResult();
-    if (success){
-      return {"results":this.scanningResults};
-    } else{
-      throw new Error("Failed to scan");
-    }
-  }
-
-  private getResult(): Promise<boolean> {
-    return new Promise<boolean>(async (resolve) => {
-        while (this.scanningResults===undefined) {
-          await this.sleep(500);
-        }
-        resolve(true);
-    });
-  }
-
-  private async sleep(ms: number) {
-      await this._sleep(ms);
-  }
-
-  private _sleep(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private arrayBufferToBase64( buffer: number[] ):string {

@@ -25,10 +25,12 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 
 <docgen-index>
 
-* [`scan(...)`](#scan)
+* [`startScan(...)`](#startscan)
 * [`toggleTorch(...)`](#toggletorch)
 * [`stopScan()`](#stopscan)
 * [`destroy()`](#destroy)
+* [`addListener(...)`](#addlistener)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -36,17 +38,15 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### scan(...)
+### startScan(...)
 
 ```typescript
-scan(options: ScanOptions) => Promise<{ results: ScanResult[]; }>
+startScan(options: ScanOptions) => Promise<void>
 ```
 
 | Param         | Type                                                |
 | ------------- | --------------------------------------------------- |
 | **`options`** | <code><a href="#scanoptions">ScanOptions</a></code> |
-
-**Returns:** <code>Promise&lt;{ results: ScanResult[]; }&gt;</code>
 
 --------------------
 
@@ -82,25 +82,49 @@ destroy() => Promise<void>
 --------------------
 
 
+### addListener(...)
+
+```typescript
+addListener(eventName: 'onFrameRead', listenerFunc: onFrameReadListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                            |
+| ------------------ | ----------------------------------------------- |
+| **`eventName`**    | <code>"onFrameRead"</code>                      |
+| **`listenerFunc`** | <code>(results: ScanResult[]) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
+
+--------------------
+
+
 ### Interfaces
-
-
-#### ScanResult
-
-| Prop                     | Type                |
-| ------------------------ | ------------------- |
-| **`barcodeText`**        | <code>string</code> |
-| **`barcodeFormat`**      | <code>string</code> |
-| **`barcodeBytesBase64`** | <code>string</code> |
 
 
 #### ScanOptions
 
-| Prop                 | Type                |
-| -------------------- | ------------------- |
-| **`license`**        | <code>string</code> |
-| **`organizationID`** | <code>string</code> |
-| **`dceLicense`**     | <code>string</code> |
-| **`template`**       | <code>string</code> |
+| Prop                 | Type                 |
+| -------------------- | -------------------- |
+| **`license`**        | <code>string</code>  |
+| **`organizationID`** | <code>string</code>  |
+| **`dceLicense`**     | <code>string</code>  |
+| **`template`**       | <code>string</code>  |
+| **`continuous`**     | <code>boolean</code> |
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>

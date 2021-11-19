@@ -16,13 +16,31 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     var barcodeReader:DynamsoftBarcodeReader! = nil
     var callBackId:String = "";
 
+    @objc func destroy(_ call: CAPPluginCall) {
+        if (barcodeReader == nil) {
+            call.reject("not initialized")
+        }else{
+            barcodeReader = nil
+            DispatchQueue.main.sync {
+                dceView.removeFromSuperview()
+            }
+            dceView = nil
+            dce = nil
+            var savedCall = bridge?.savedCall(withID: callBackId);
+            if (savedCall != nil){
+                savedCall = nil
+            }
+            call.resolve()
+        }
+    }
+    
     @objc func scan(_ call: CAPPluginCall) {
         NSLog("scanning")
-        call.keepAlive=true;
+        call.keepAlive = true;
         bridge?.saveCall(call)
         callBackId = call.callbackId;
         makeWebViewTransparent()
-        if (barcodeReader==nil){
+        if (barcodeReader == nil){
             configurationDBR()
             configurationDCE()
         }else{
@@ -46,7 +64,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     }
     
     @objc func toggleTorch(_ call: CAPPluginCall) {
-        if (dce==nil){
+        if (dce == nil){
             call.reject("not initialized")
         }else{
             if call.getBool("on", true){
@@ -59,7 +77,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     }
     
     @objc func stopScan(_ call: CAPPluginCall) {
-        if (dce==nil){
+        if (dce == nil){
             call.reject("not initialized")
         }else{
             dce.pause()
@@ -91,10 +109,12 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     
     func configurationDCE() {
         // Initialize a camera view for previewing video.
-        dceView = DCECameraView.init(frame: (bridge?.viewController?.view.bounds)!)
-        dceView.overlayVisible = true
-        self.webView!.superview!.insertSubview(dceView, belowSubview: self.webView!)
-        dce = DynamsoftCameraEnhancer.init(view: dceView)
+        DispatchQueue.main.sync {
+            dceView = DCECameraView.init(frame: (bridge?.viewController?.view.bounds)!)
+            dceView.overlayVisible = true
+            self.webView!.superview!.insertSubview(dceView, belowSubview: self.webView!)
+            dce = DynamsoftCameraEnhancer.init(view: dceView)
+        }
         dce.open()
         bindDCEtoDBR()
     }
@@ -135,13 +155,25 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     
     // Obtain the recognized barcode results from the textResultCallback and display the results
     public func textResultCallback(_ frameId: Int, results: [iTextResult]?, userData: NSObject?) {
-        if results?.count ?? 0 > 0 {
+        let count = results?.count ?? 0
+        if count > 0 {
             NSLog("Found barcodes")
             dce.pause()
             restoreWebViewBackground()
-            let result:iTextResult = results![0]
             let call = bridge?.savedCall(withID: callBackId)
-            call?.resolve(["barcodeText": result.barcodeText,"barcodeFormat":result.barcodeFormatString,"barcodeBytesBase64":result.barcodeBytes?.base64EncodedString()])
+            var ret = PluginCallResultData()
+            let array = NSMutableArray();
+
+            for index in 0..<count {
+                let tr = results![index]
+                var result = PluginCallResultData()
+                result["barcodeText"] = tr.barcodeText
+                result["barcodeFormat"] = tr.barcodeFormatString
+                result["barcodeBytesBase64"] = tr.barcodeBytes?.base64EncodedString()
+                array.add(result)
+            }
+            ret["results"]=array
+            call?.resolve(ret)
         }
     }
     

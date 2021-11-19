@@ -1,11 +1,11 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DBRPlugin } from './definitions';
+import type { DBRPlugin, ScanResult } from './definitions';
 import DBR, { BarcodeScanner, TextResult } from "dynamsoft-javascript-barcode";
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.6.3/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
-  private scanningResult!: TextResult;
+  private scanningResults!: ScanResult[];
   private scanner!: BarcodeScanner;
   async toggleTorch(_options:{ on:boolean}){
     try{
@@ -31,29 +31,34 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return
   }
 
-  async scan(_options:{ license?: string,
+  async scan(options:{ license?: string,
     organizationID?: string,
-    dceLicense?:string,template?: string}): Promise<{ barcodeText: string,
-                          barcodeFormat:string,
-                          barcodeBytesBase64: string}> {
-    this.scanningResult = undefined!;
+    dceLicense?:string,template?: string}): Promise<{results:ScanResult[]}> {
+    this.scanningResults = undefined!;
     if (this.scanner === undefined){
-      if (_options.organizationID){
-        DBR.BarcodeScanner.organizationID = _options.organizationID;
+      if (options.organizationID){
+        DBR.BarcodeScanner.organizationID = options.organizationID;
         console.log("set organization ID");
-      }else if (_options.license){
-        DBR.BarcodeScanner.productKeys = _options.license;
+      }else if (options.license){
+        DBR.BarcodeScanner.productKeys = options.license;
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
-      if (_options.template){
-        await this.scanner.initRuntimeSettingsWithString(_options.template);
+      if (options.template){
+        await this.scanner.initRuntimeSettingsWithString(options.template);
         console.log("Using template");
       }
       this.scanner.onFrameRead = results => {
         if (results.length>0){
           this.scanner.close();
           this.scanner.hide();
-          this.scanningResult = results[0];
+          var scanResults = [];
+          for (let index = 0; index < results.length; index++) {
+            let result:TextResult = results[index];
+            var scanResult:ScanResult;
+            scanResult = {barcodeText:result.barcodeText,barcodeFormat:result.barcodeFormatString,barcodeBytesBase64:this.arrayBufferToBase64(result.barcodeBytes)}
+            scanResults.push(scanResult)
+          }
+          this.scanningResults = scanResults;
         }
       };
       this.scanner.UIElement.getElementsByClassName("dbrScanner-btn-close")[0].remove();
@@ -64,7 +69,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     await this.scanner.show();
     let success:boolean = await this.getResult();
     if (success){
-      return {"barcodeText":this.scanningResult.barcodeText,"barcodeFormat":this.scanningResult.barcodeFormatString,"barcodeBytesBase64":this.arrayBufferToBase64(this.scanningResult.barcodeBytes)};
+      return {"results":this.scanningResults};
     } else{
       throw new Error("Failed to scan");
     }
@@ -72,7 +77,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   private getResult(): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
-        while (this.scanningResult===undefined) {
+        while (this.scanningResults===undefined) {
           await this.sleep(500);
         }
         resolve(true);

@@ -11,6 +11,7 @@ import com.dynamsoft.dce.CameraEnhancer;
 import com.dynamsoft.dce.CameraEnhancerException;
 import com.dynamsoft.dce.DCECameraView;
 import com.dynamsoft.dce.DCELicenseVerificationListener;
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -40,6 +41,10 @@ public class DBRPlugin extends Plugin {
                     mCameraView = null;
                     mCameraEnhancer=null;
                     reader=null;
+                    PluginCall savedCall = bridge.getSavedCall(currentCallbackID);
+                    if (savedCall != null) {
+                        savedCall = null;
+                    }
                 }
             });
         }
@@ -55,11 +60,7 @@ public class DBRPlugin extends Plugin {
     class InitThread implements Runnable{
         @Override
         public void run(){
-            boolean notInitialized = false;
             if (reader == null){
-                notInitialized = true;
-            }
-            if (notInitialized){
                 try {
                     initDBR();
                     initDCE();
@@ -72,11 +73,16 @@ public class DBRPlugin extends Plugin {
                                 PluginCall call = bridge.getSavedCall(currentCallbackID);
                                 try{
                                     restoreWebViewBackground();
-                                    TextResult result = textResults[0];
                                     JSObject ret = new JSObject();
-                                    ret.put("barcodeText", result.barcodeText);
-                                    ret.put("barcodeFormat", result.barcodeFormatString);
-                                    ret.put("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
+                                    JSArray array = new JSArray();
+                                    for (TextResult tr:textResults){
+                                        JSObject oneRet = new JSObject();
+                                        oneRet.put("barcodeText", tr.barcodeText);
+                                        oneRet.put("barcodeFormat", tr.barcodeFormatString);
+                                        oneRet.put("barcodeBytesBase64", Base64.encodeToString(tr.barcodeBytes,Base64.DEFAULT));
+                                        array.put(oneRet);
+                                    }
+                                    ret.put("results",array);
                                     reader.PauseCameraEnhancer();
                                     call.resolve(ret);
                                 }catch (Exception e){

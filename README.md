@@ -29,6 +29,7 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 * [`toggleTorch(...)`](#toggletorch)
 * [`stopScan()`](#stopscan)
 * [`destroy()`](#destroy)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -38,14 +39,14 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 ### scan(...)
 
 ```typescript
-scan(_options: { license?: string; organizationID?: string; dceLicense?: string; template?: string; }) => Promise<{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }>
+scan(options: { license?: string; organizationID?: string; dceLicense?: string; template?: string; }) => Promise<{ results: ScanResult[]; }>
 ```
 
-| Param          | Type                                                                                                |
-| -------------- | --------------------------------------------------------------------------------------------------- |
-| **`_options`** | <code>{ license?: string; organizationID?: string; dceLicense?: string; template?: string; }</code> |
+| Param         | Type                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ license?: string; organizationID?: string; dceLicense?: string; template?: string; }</code> |
 
-**Returns:** <code>Promise&lt;{ barcodeText: string; barcodeFormat: string; barcodeBytesBase64: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ results: ScanResult[]; }&gt;</code>
 
 --------------------
 
@@ -53,12 +54,12 @@ scan(_options: { license?: string; organizationID?: string; dceLicense?: string;
 ### toggleTorch(...)
 
 ```typescript
-toggleTorch(_options: { on: boolean; }) => Promise<void>
+toggleTorch(options: { on: boolean; }) => Promise<void>
 ```
 
-| Param          | Type                          |
-| -------------- | ----------------------------- |
-| **`_options`** | <code>{ on: boolean; }</code> |
+| Param         | Type                          |
+| ------------- | ----------------------------- |
+| **`options`** | <code>{ on: boolean; }</code> |
 
 --------------------
 
@@ -79,5 +80,17 @@ destroy() => Promise<void>
 ```
 
 --------------------
+
+
+### Interfaces
+
+
+#### ScanResult
+
+| Prop                     | Type                |
+| ------------------------ | ------------------- |
+| **`barcodeText`**        | <code>string</code> |
+| **`barcodeFormat`**      | <code>string</code> |
+| **`barcodeBytesBase64`** | <code>string</code> |
 
 </docgen-api>

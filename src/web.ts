@@ -39,10 +39,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
         DBR.BarcodeScanner.productKeys = options.license;
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
-      if (options.template){
-        await this.scanner.initRuntimeSettingsWithString(options.template);
-        console.log("Using template");
-      }
       this.scanner.onFrameRead = results => {
         if (results.length>0){
           if (options.continuous == false){
@@ -64,7 +60,10 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }else{
       console.log("Scanner already initialized.");
     }
-    
+    if (options.template){
+      await this.scanner.initRuntimeSettingsWithString(options.template);
+      console.log("Using template");
+    }
     await this.scanner.show();
   }
 

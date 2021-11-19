@@ -31,7 +31,7 @@ public class DBRPlugin extends Plugin {
     private DCECameraView mCameraView;
     private BarcodeReader reader = null;
     private String currentCallbackID;
-
+    private boolean continuous = false;
     @PluginMethod
     public void destroy(PluginCall call) {
         if (reader!=null){
@@ -52,6 +52,7 @@ public class DBRPlugin extends Plugin {
         nullifyPreviousCall();
         call.setKeepAlive(true);
         currentCallbackID = call.getCallbackId();
+        this.continuous=call.getBoolean("continuous",false);
         init();
     }
 
@@ -86,7 +87,7 @@ public class DBRPlugin extends Plugin {
                                     array.put(oneRet);
                                 }
                                 ret.put("results",array);
-                                if (call.getBoolean("continuous",false)==false){
+                                if (continuous==false){
                                     reader.PauseCameraEnhancer();
                                     restoreWebViewBackground();
                                 }

@@ -41,27 +41,33 @@ public class DBRPlugin extends Plugin {
                     mCameraView = null;
                     mCameraEnhancer=null;
                     reader=null;
-                    PluginCall savedCall = bridge.getSavedCall(currentCallbackID);
-                    if (savedCall != null) {
-                        savedCall = null;
-                    }
+                    nullifyPreviousCall();
                 }
             });
         }
     }
 
     @PluginMethod
-    public void scan(PluginCall call) {
+    public void startScan(PluginCall call) {
+        nullifyPreviousCall();
         call.setKeepAlive(true);
         currentCallbackID = call.getCallbackId();
         init();
     }
 
+    private void nullifyPreviousCall(){
+        PluginCall savedCall = bridge.getSavedCall(currentCallbackID);
+        if (savedCall != null) {
+            savedCall = null;
+        }
+    }
+
     class InitThread implements Runnable{
         @Override
         public void run(){
-            if (reader == null){
-                try {
+            PluginCall call = bridge.getSavedCall(currentCallbackID);
+            try{
+                if (reader == null){
                     initDBR();
                     initDCE();
                     TextResultCallback mTextResultCallback = new TextResultCallback() {
@@ -70,24 +76,22 @@ public class DBRPlugin extends Plugin {
                         public void textResultCallback(int i, TextResult[] textResults, Object userData) {
                             System.out.println("Found "+textResults.length+" barcode(s).");
                             if (textResults.length>0){
-                                PluginCall call = bridge.getSavedCall(currentCallbackID);
-                                try{
-                                    restoreWebViewBackground();
-                                    JSObject ret = new JSObject();
-                                    JSArray array = new JSArray();
-                                    for (TextResult tr:textResults){
-                                        JSObject oneRet = new JSObject();
-                                        oneRet.put("barcodeText", tr.barcodeText);
-                                        oneRet.put("barcodeFormat", tr.barcodeFormatString);
-                                        oneRet.put("barcodeBytesBase64", Base64.encodeToString(tr.barcodeBytes,Base64.DEFAULT));
-                                        array.put(oneRet);
-                                    }
-                                    ret.put("results",array);
-                                    reader.PauseCameraEnhancer();
-                                    call.resolve(ret);
-                                }catch (Exception e){
-                                    call.reject(e.getMessage());
+
+                                restoreWebViewBackground();
+                                JSObject ret = new JSObject();
+                                JSArray array = new JSArray();
+                                for (TextResult tr:textResults){
+                                    JSObject oneRet = new JSObject();
+                                    oneRet.put("barcodeText", tr.barcodeText);
+                                    oneRet.put("barcodeFormat", tr.barcodeFormatString);
+                                    oneRet.put("barcodeBytesBase64", Base64.encodeToString(tr.barcodeBytes,Base64.DEFAULT));
+                                    array.put(oneRet);
                                 }
+                                ret.put("results",array);
+                                if (call.getBoolean("continuous",false)==false){
+                                    reader.PauseCameraEnhancer();
+                                }
+                                notifyListeners("onFrameRead",ret);
                             }
                         }
                     };
@@ -97,11 +101,13 @@ public class DBRPlugin extends Plugin {
                     dceSettingParameters.textResultCallback = mTextResultCallback;
                     reader.SetCameraEnhancerParam(dceSettingParameters);
                     reader.StartCameraEnhancer();
-                } catch (BarcodeReaderException e) {
-                    e.printStackTrace();
+                }else{
+                    reader.ResumeCameraEnhancer();
                 }
-            }else{
-                reader.ResumeCameraEnhancer();
+                call.resolve();
+            } catch (BarcodeReaderException e) {
+                e.printStackTrace();
+                call.reject(e.getMessage());
             }
         }
     }
@@ -132,6 +138,8 @@ public class DBRPlugin extends Plugin {
 
         if (call.hasOption("template")){
             reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
+        }else{
+            reader.resetRuntimeSettings();
         }
 
     }

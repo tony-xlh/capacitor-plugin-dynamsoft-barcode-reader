@@ -28,6 +28,7 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 * [`scan(...)`](#scan)
 * [`toggleTorch(...)`](#toggletorch)
 * [`stopScan()`](#stopscan)
+* [`destroy()`](#destroy)
 
 </docgen-index>
 
@@ -66,6 +67,15 @@ toggleTorch(_options: { on: boolean; }) => Promise<void>
 
 ```typescript
 stopScan() => Promise<void>
+```
+
+--------------------
+
+
+### destroy()
+
+```typescript
+destroy() => Promise<void>
 ```
 
 --------------------

@@ -30,6 +30,21 @@ public class DBRPlugin extends Plugin {
     private DCECameraView mCameraView;
     private BarcodeReader reader = null;
     private String currentCallbackID;
+
+    @PluginMethod
+    public void destroy(PluginCall call) {
+        if (reader!=null){
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    ((ViewGroup) bridge.getWebView().getParent()).removeView(mCameraView);
+                    mCameraView = null;
+                    mCameraEnhancer=null;
+                    reader=null;
+                }
+            });
+        }
+    }
+
     @PluginMethod
     public void scan(PluginCall call) {
         call.setKeepAlive(true);

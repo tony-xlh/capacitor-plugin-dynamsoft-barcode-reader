@@ -21,10 +21,14 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async stopScan(){
     try{
-      this.scanner.hide();
+      await this.scanner.hide();
     } catch (e){
       throw e;
     }
+  }
+
+  async destroy():Promise<void>{
+    return
   }
 
   async scan(_options:{ license?: string,

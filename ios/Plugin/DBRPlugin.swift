@@ -15,7 +15,8 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     var dceView:DCECameraView! = nil
     var barcodeReader:DynamsoftBarcodeReader! = nil
     var callBackId:String = "";
-
+    var continuous:Bool = false;
+    
     @objc func destroy(_ call: CAPPluginCall) {
         if (barcodeReader == nil) {
             call.reject("not initialized")
@@ -41,6 +42,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     @objc func startScan(_ call: CAPPluginCall) {
         NSLog("scanning")
         nullifyPreviousCall()
+        continuous=call.getBool("continuous", false)
         call.keepAlive = true;
         bridge?.saveCall(call)
         callBackId = call.callbackId;
@@ -167,7 +169,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
         let count = results?.count ?? 0
         if count > 0 {
             NSLog("Found barcodes")
-            let call = bridge?.savedCall(withID: callBackId)
             var ret = PluginCallResultData()
             let array = NSMutableArray();
             for index in 0..<count {
@@ -180,7 +181,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
             }
             ret["results"]=array
             notifyListeners("onFrameRead", data: ret)
-            let continuous = call?.getBool("continuous", false)
             if (continuous==false){
                 dce.pause()
                 restoreWebViewBackground()

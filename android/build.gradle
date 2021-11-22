@@ -15,6 +15,17 @@ buildscript {
     }
 }
 
+rootProject.allprojects {
+    repositories {
+        maven {
+            url "http://download2.dynamsoft.com/maven/dbr/aar"
+        }
+        maven {
+            url "https://download2.dynamsoft.com/maven/dce/aar"
+        }
+    }
+}
+
 apply plugin: 'com.android.library'
 
 android {
@@ -42,15 +53,15 @@ android {
 }
 
 repositories {
-    google()
-    jcenter()
-    mavenCentral()
     maven {
         url "https://download2.dynamsoft.com/maven/dbr/aar"
     }
     maven {
         url "https://download2.dynamsoft.com/maven/dce/aar"
     }
+    google()
+    jcenter()
+    mavenCentral()
 }
 
 

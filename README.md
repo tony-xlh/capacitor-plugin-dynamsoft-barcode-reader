@@ -2,6 +2,12 @@
 
 A capacitor plugin for Dynamsoft Barcode Reader
 
+## Supported Platforms
+
+* Android
+* iOS
+* Web
+
 ## Install
 
 ```bash
@@ -128,3 +134,28 @@ removeAllListeners() => Promise<void>
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>
+
+## Supported Barcode Symbologies
+
+* Code 39
+* Code 93
+* Code 128
+* Codabar
+* EAN-8
+* EAN-13
+* UPC-A
+* UPC-E
+* Interleaved 2 of 5 (ITF)
+* Industrial 2 of 5 (Code 2 of 5 Industry, Standard 2 of 5, Code 2 of 5)
+* ITF-14 
+* QRCode
+* DataMatrix
+* PDF417
+* GS1 DataBar
+* Maxicode
+* Micro PDF417
+* Micro QR
+* PatchCode
+* GS1 Composite
+* Postal Code
+* Dot Code

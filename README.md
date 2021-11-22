@@ -27,6 +27,10 @@ Dependent frameworks for iOS will be downloaded automatically via postinstall sc
 * [Dynamsoft Camera Enhancer](https://www.dynamsoft.com/camera-enhancer/docs/introduction/)
 * [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/)
 
+## Demo
+
+<https://github.com/xulihang/capacitor-qr-code-scanner>
+
 ## API
 
 <docgen-index>

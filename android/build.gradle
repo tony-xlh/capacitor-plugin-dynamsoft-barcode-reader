@@ -18,7 +18,7 @@ buildscript {
 rootProject.allprojects {
     repositories {
         maven {
-            url "http://download2.dynamsoft.com/maven/dbr/aar"
+            url "https://download2.dynamsoft.com/maven/dbr/aar"
         }
         maven {
             url "https://download2.dynamsoft.com/maven/dce/aar"

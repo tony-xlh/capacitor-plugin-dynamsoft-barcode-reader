@@ -11,7 +11,6 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "downloadAndUnzip.js",
     "CapacitorPluginDynamsoftBarcodeReader.podspec"
   ],
   "author": "Xu Lihang",
@@ -42,8 +41,7 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "postinstall": "npm install download && node downloadAndUnzip.js"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",

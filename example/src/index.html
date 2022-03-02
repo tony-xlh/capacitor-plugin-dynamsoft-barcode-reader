@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynamsoft Barcode Reader Example</title>
+  <meta name="description" content="A light foundation for your next frontend project based on webpack.">
+</head>
+<body>
+  <div id="content">
+    <h1>Dynamsoft Barcode Reader Example</h1>
+    <p>Result:<pre id="results"></pre></p>
+    <button type="button" onClick="startScan()">Start Scan</button>
+  </div>
+  
+  <script>
+    async function startScan(){
+      document.getElementById("content").style.display = "none";
+      await DBR.startScan({continuous:false});
+      DBR.addListener('onFrameRead', async (retObj) => {
+        let results = retObj["results"];
+        console.log(results);
+        let text = "";
+        for (let index = 0; index < results.length; index++) {
+          const result = results[index];
+          text = text + result.barcodeText + "\n";
+        }
+        document.getElementById("results").innerText = text;
+        document.getElementById("content").style.display = "";
+        document.body.style.backgroundColor = "white";
+        await DBR.destroy();
+      });
+    }
+  </script>
+</body>
+</html>

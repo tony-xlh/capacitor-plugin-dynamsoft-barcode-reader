@@ -1,0 +1,6 @@
+[
+	{
+		"pkg": "capacitor-plugin-dynamsoft-barcode-reader",
+		"classpath": "com.dynamsoft.dbr.DBRPlugin"
+	}
+]

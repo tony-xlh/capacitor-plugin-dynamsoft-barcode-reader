@@ -16,6 +16,7 @@
   <script>
     async function startScan(){
       document.getElementById("content").style.display = "none";
+      document.body.style.backgroundColor = "transparent";
       await DBR.startScan({continuous:false});
       DBR.addListener('onFrameRead', async (retObj) => {
         let results = retObj["results"];

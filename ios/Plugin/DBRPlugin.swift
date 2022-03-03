@@ -120,10 +120,12 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     func configurationDCE() {
         // Initialize a camera view for previewing video.
         DispatchQueue.main.sync {
+            print("configuring dce")
             dceView = DCECameraView.init(frame: (bridge?.viewController?.view.bounds)!)
             dceView.overlayVisible = true
             self.webView!.superview!.insertSubview(dceView, belowSubview: self.webView!)
             dce = DynamsoftCameraEnhancer.init(view: dceView)
+            
         }
         dce.open()
         bindDCEtoDBR()
@@ -166,6 +168,9 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     
     // Obtain the recognized barcode results from the textResultCallback and display the results
     public func textResultCallback(_ frameId: Int, results: [iTextResult]?, userData: NSObject?) {
+        if dce == nil {
+            return
+        }
         let count = results?.count ?? 0
         if count > 0 {
             NSLog("Found barcodes")

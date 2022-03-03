@@ -75,6 +75,9 @@ public class DBRPlugin extends Plugin {
                         // Obtain the recognized barcode results and display.
                         @Override
                         public void textResultCallback(int i, TextResult[] textResults, Object userData) {
+                            if (reader == null){
+                                return;
+                            }
                             System.out.println("Found "+textResults.length+" barcode(s).");
                             if (textResults.length>0){
                                 JSObject ret = new JSObject();

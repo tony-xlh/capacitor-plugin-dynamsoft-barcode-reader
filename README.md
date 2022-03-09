@@ -1,6 +1,8 @@
 # capacitor-plugin-dynamsoft-barcode-reader
 
-A capacitor plugin for Dynamsoft Barcode Reader
+![version](https://img.shields.io/npm/v/capacitor-plugin-dynamsoft-barcode-reader.svg)
+
+A capacitor plugin for [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/) and [Dynamsoft Camera Enhancer](https://www.dynamsoft.com/camera-enhancer/docs/introduction/).
 
 ## Supported Platforms
 
@@ -21,11 +23,6 @@ Or install from a local folder
 npm install <path-to-the-project>
 npx cap sync
 ```
-
-Dependent frameworks for iOS will be downloaded automatically via postinstall script. You can also download them and put them under the plugin's folder by yourself:
-
-* [Dynamsoft Camera Enhancer](https://www.dynamsoft.com/camera-enhancer/docs/introduction/)
-* [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/)
 
 ## Demo
 

@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.libraries = 'c++'
   s.ios.deployment_target  = '12.0'
   s.dependency 'Capacitor'
-  s.dependency 'DynamsoftCameraEnhancer', '~> 2.0.0'
-  s.dependency 'DynamsoftBarcodeReader', '~> 8.8.0'
+  s.dependency 'DynamsoftCameraEnhancer', '= 2.0.0'
+  s.dependency 'DynamsoftBarcodeReader', '= 8.8.0'
   s.swift_version = '5.1'
 end

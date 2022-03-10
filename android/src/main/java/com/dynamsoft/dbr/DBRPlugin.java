@@ -1,8 +1,10 @@
 package com.dynamsoft.dbr;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -10,6 +12,8 @@ import android.widget.FrameLayout;
 import com.dynamsoft.dce.CameraEnhancer;
 import com.dynamsoft.dce.CameraEnhancerException;
 import com.dynamsoft.dce.DCECameraView;
+import com.dynamsoft.dce.DCEFrame;
+import com.dynamsoft.dce.DCEFrameListener;
 import com.dynamsoft.dce.DCELicenseVerificationListener;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -18,6 +22,8 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -71,41 +77,15 @@ public class DBRPlugin extends Plugin {
                 if (reader == null){
                     initDBR();
                     initDCE();
-                    TextResultCallback mTextResultCallback = new TextResultCallback() {
-                        // Obtain the recognized barcode results and display.
-                        @Override
-                        public void textResultCallback(int i, TextResult[] textResults, Object userData) {
-                            if (reader == null){
-                                return;
-                            }
-                            System.out.println("Found "+textResults.length+" barcode(s).");
-                            if (textResults.length>0){
-                                JSObject ret = new JSObject();
-                                JSArray array = new JSArray();
-                                for (TextResult tr:textResults){
-                                    JSObject oneRet = new JSObject();
-                                    oneRet.put("barcodeText", tr.barcodeText);
-                                    oneRet.put("barcodeFormat", tr.barcodeFormatString);
-                                    oneRet.put("barcodeBytesBase64", Base64.encodeToString(tr.barcodeBytes,Base64.DEFAULT));
-                                    array.put(oneRet);
-                                }
-                                ret.put("results",array);
-                                if (continuous==false){
-                                    reader.PauseCameraEnhancer();
-                                    restoreWebViewBackground();
-                                }
-                                notifyListeners("onFrameRead",ret);
-                            }
-                        }
-                    };
-
-                    DCESettingParameters dceSettingParameters = new DCESettingParameters();
-                    dceSettingParameters.cameraInstance = mCameraEnhancer;
-                    dceSettingParameters.textResultCallback = mTextResultCallback;
-                    reader.SetCameraEnhancerParam(dceSettingParameters);
-                    reader.StartCameraEnhancer();
+                    bindDBRandDCE();
+                    makeWebViewTransparent();
                 }else{
-                    reader.ResumeCameraEnhancer();
+                    makeWebViewTransparent();
+                    try {
+                        mCameraEnhancer.open();
+                    } catch (CameraEnhancerException e) {
+                        e.printStackTrace();
+                    }
                 }
                 if (call.hasOption("template")){
                     reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
@@ -159,14 +139,62 @@ public class DBRPlugin extends Plugin {
         mCameraEnhancer = new CameraEnhancer(getActivity());
         mCameraView = new DCECameraView(getActivity());
         mCameraEnhancer.setCameraView(mCameraView);
-        mCameraView.setOverlayVisible(true);
         FrameLayout.LayoutParams cameraPreviewParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
         );
         ((ViewGroup) bridge.getWebView().getParent()).addView(mCameraView,cameraPreviewParams);
         bridge.getWebView().bringToFront();
-        makeWebViewTransparent();
+    }
+
+    private void bindDBRandDCE(){
+        DCEFrameListener listener = new DCEFrameListener(){
+            @Override
+            public void frameOutputCallback(DCEFrame frame, long timeStamp) {
+                try {
+                    Bitmap rotatedBitmap = BitmapUtils.rotateBitmap(frame.toBitmap(),frame.getOrientation(),false,false);
+                    TextResult[] textResults = reader.decodeBufferedImage(rotatedBitmap,"");
+                    JSObject ret = wrapResults(textResults);
+                    ret.put("frameWidth",rotatedBitmap.getWidth());
+                    ret.put("frameHeight",rotatedBitmap.getHeight());
+                    Log.d("DBR","Found "+textResults.length+" barcode(s).");
+                    if (continuous==false){
+                        try {
+                            mCameraEnhancer.close();
+                        } catch (CameraEnhancerException e) {
+                            e.printStackTrace();
+                        }
+                        restoreWebViewBackground();
+                    }
+                    notifyListeners("onFrameRead",ret);
+                } catch (BarcodeReaderException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        mCameraEnhancer.addListener(listener);
+    }
+
+    private JSObject wrapResults(TextResult[] results) {
+        JSObject ret = new JSObject();
+        JSArray array = new JSArray();
+        for (TextResult result:results){
+            JSObject oneRet = new JSObject();
+            oneRet.put("barcodeText", result.barcodeText);
+            oneRet.put("barcodeFormat", result.barcodeFormatString);
+            oneRet.put("barcodeBytesBase64", Base64.encodeToString(result.barcodeBytes,Base64.DEFAULT));
+            oneRet.put("x1", result.localizationResult.resultPoints[0].x);
+            oneRet.put("y1", result.localizationResult.resultPoints[0].y);
+            oneRet.put("x2", result.localizationResult.resultPoints[1].x);
+            oneRet.put("y2", result.localizationResult.resultPoints[1].y);
+            oneRet.put("x3", result.localizationResult.resultPoints[2].x);
+            oneRet.put("y3", result.localizationResult.resultPoints[2].y);
+            oneRet.put("x4", result.localizationResult.resultPoints[3].x);
+            oneRet.put("y4", result.localizationResult.resultPoints[3].y);
+            array.put(oneRet);
+        }
+        ret.put("results",array);
+        return ret;
     }
 
     private void makeWebViewTransparent(){
@@ -197,7 +225,27 @@ public class DBRPlugin extends Plugin {
     public void stopScan(PluginCall call) {
         try{
             restoreWebViewBackground();
-            reader.PauseCameraEnhancer();
+            mCameraEnhancer.close();
+            call.resolve();
+        }catch (Exception e){
+            call.reject(e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void pauseScan(PluginCall call) {
+        try{
+            mCameraEnhancer.pause();
+            call.resolve();
+        }catch (Exception e){
+            call.reject(e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void resumeScan(PluginCall call) {
+        try{
+            mCameraEnhancer.resume();
             call.resolve();
         }catch (Exception e){
             call.reject(e.getMessage());
@@ -207,16 +255,24 @@ public class DBRPlugin extends Plugin {
 
     @Override
     protected void handleOnPause() {
-        if (reader!=null){
-            reader.StopCameraEnhancer();
+        if (mCameraEnhancer!=null){
+            try {
+                mCameraEnhancer.close();
+            } catch (CameraEnhancerException e) {
+                e.printStackTrace();
+            }
         }
         super.handleOnPause();
     }
 
     @Override
     protected void handleOnResume() {
-        if (reader!=null){
-            reader.StartCameraEnhancer();
+        if (mCameraEnhancer!=null){
+            try {
+                mCameraEnhancer.open();
+            } catch (CameraEnhancerException e) {
+                e.printStackTrace();
+            }
         }
         super.handleOnResume();
     }

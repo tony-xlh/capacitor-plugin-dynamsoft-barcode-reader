@@ -1,7 +1,7 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DBRPlugin, ScanOptions, ScanResult } from './definitions';
-import DBR, { BarcodeScanner, TextResult } from "dynamsoft-javascript-barcode";
+import type { DBRPlugin, ScanOptions, ScanResult, TextResult } from './definitions';
+import DBR, { BarcodeScanner, TextResult as DBRTextResult } from "dynamsoft-javascript-barcode";
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.6.3/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
@@ -27,6 +27,22 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }
   }
 
+  async pauseScan(){
+    try{
+      this.scanner.pauseScan();
+    } catch (e){
+      throw e;
+    }
+  }
+
+  async resumeScan(){
+    try{
+      this.scanner.resumeScan();
+    } catch (e){
+      throw e;
+    }
+  }
+
   async destroy():Promise<void>{
     return
   }
@@ -46,20 +62,35 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
       this.scanner.onFrameRead = results => {
-        if (results.length>0){
-          if (this.continuous == false){
-            this.scanner.close();
-            this.scanner.hide();
-          }
-          var scanResults = [];
-          for (let index = 0; index < results.length; index++) {
-            let result:TextResult = results[index];
-            var scanResult:ScanResult;
-            scanResult = {barcodeText:result.barcodeText,barcodeFormat:result.barcodeFormatString,barcodeBytesBase64:this.arrayBufferToBase64(result.barcodeBytes)}
-            scanResults.push(scanResult)
-          }
-          var ret = {"results":scanResults};
-          this.notifyListeners("onFrameRead", ret);
+        var textResults = [];
+        for (let index = 0; index < results.length; index++) {
+          let result:DBRTextResult = results[index];
+          var tr:TextResult;
+          tr =  {
+                  barcodeText:result.barcodeText,
+                  barcodeFormat:result.barcodeFormatString,
+                  barcodeBytesBase64:this.arrayBufferToBase64(result.barcodeBytes),
+                  x1:result.localizationResult.x1,
+                  y1:result.localizationResult.y1,
+                  x2:result.localizationResult.x2,
+                  y2:result.localizationResult.y2,
+                  x3:result.localizationResult.x3,
+                  y3:result.localizationResult.y3,
+                  x4:result.localizationResult.x4,
+                  y4:result.localizationResult.y4,
+                }
+          textResults.push(tr)
+        }
+        let rsl = this.scanner.getResolution();
+        
+        var ret:ScanResult = {"results":textResults,
+                              "frameWidth": rsl[0],
+                              "frameHeight": rsl[1],
+                              };
+        this.notifyListeners("onFrameRead", ret);
+        if (this.continuous == false && results.length>0){
+          this.scanner.close();
+          this.scanner.hide();
         }
       };
       this.scanner.UIElement.getElementsByClassName("dbrScanner-btn-close")[0].remove();

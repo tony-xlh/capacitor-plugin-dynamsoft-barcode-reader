@@ -35,6 +35,8 @@ npx cap sync
 * [`startScan(...)`](#startscan)
 * [`toggleTorch(...)`](#toggletorch)
 * [`stopScan()`](#stopscan)
+* [`resumeScan()`](#resumescan)
+* [`pauseScan()`](#pausescan)
 * [`destroy()`](#destroy)
 * [`addListener(...)`](#addlistener)
 * [`removeAllListeners()`](#removealllisteners)
@@ -80,6 +82,24 @@ stopScan() => Promise<void>
 --------------------
 
 
+### resumeScan()
+
+```typescript
+resumeScan() => Promise<void>
+```
+
+--------------------
+
+
+### pauseScan()
+
+```typescript
+pauseScan() => Promise<void>
+```
+
+--------------------
+
+
 ### destroy()
 
 ```typescript
@@ -95,10 +115,10 @@ destroy() => Promise<void>
 addListener(eventName: 'onFrameRead', listenerFunc: onFrameReadListener) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
-| Param              | Type                                            |
-| ------------------ | ----------------------------------------------- |
-| **`eventName`**    | <code>"onFrameRead"</code>                      |
-| **`listenerFunc`** | <code>(results: ScanResult[]) =&gt; void</code> |
+| Param              | Type                                         |
+| ------------------ | -------------------------------------------- |
+| **`eventName`**    | <code>"onFrameRead"</code>                   |
+| **`listenerFunc`** | <code>(result: ScanResult) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 

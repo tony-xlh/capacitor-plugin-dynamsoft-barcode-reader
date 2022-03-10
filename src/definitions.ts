@@ -4,6 +4,8 @@ export interface DBRPlugin {
   startScan(options: ScanOptions): Promise<void>;
   toggleTorch(options: {on: boolean}): Promise<void>;
   stopScan(): Promise<void>;
+  resumeScan(): Promise<void>;
+  pauseScan(): Promise<void>;
   destroy(): Promise<void>;
   addListener(
     eventName: 'onFrameRead',
@@ -12,7 +14,7 @@ export interface DBRPlugin {
   removeAllListeners(): Promise<void>;
 }
 
-export type onFrameReadListener = (results:ScanResult[]) => void;
+export type onFrameReadListener = (result:ScanResult) => void;
 
 export interface ScanOptions {
   license?: string;
@@ -23,7 +25,21 @@ export interface ScanOptions {
 }
 
 export interface ScanResult{
+  results: TextResult[];
+  frameWidth: number;
+  frameHeight: number;
+}
+
+export interface TextResult{
   barcodeText: string;
   barcodeFormat: string;
   barcodeBytesBase64: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  x3: number;
+  y3: number;
+  x4: number;
+  y4: number;
 }

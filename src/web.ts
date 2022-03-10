@@ -6,7 +6,6 @@ DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barc
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private scanner!: BarcodeScanner;
-  private continuous: boolean = false;
   async toggleTorch(options:{ on:boolean}){
     try{
       if (options["on"]){
@@ -48,11 +47,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async startScan(options:ScanOptions): Promise<void> {
-    if ("continuous" in options){
-      if (options.continuous!=undefined){
-        this.continuous=options.continuous;
-      }
-    }
     if (this.scanner === undefined){
       if (options.organizationID){
         DBR.BarcodeScanner.organizationID = options.organizationID;
@@ -88,10 +82,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
                               "frameHeight": rsl[1],
                               };
         this.notifyListeners("onFrameRead", ret);
-        if (this.continuous == false && results.length>0){
-          this.scanner.close();
-          this.scanner.hide();
-        }
       };
       this.scanner.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
       this.scanner.getUIElement().getElementsByClassName("dbrScanner-cvs-drawarea")[0].remove();

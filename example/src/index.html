@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dynamsoft Barcode Reader Example</title>
   <meta name="description" content="A light foundation for your next frontend project based on webpack.">
+  <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
 </head>
 <body>
   <div id="content" style="max-width: 100%;">
@@ -16,10 +18,9 @@
   </div>
   
   <script>
-    async function startScan(){
-      document.getElementById("content").style.display = "none";
-      document.body.style.backgroundColor = "transparent";
-      await DBR.startScan({continuous:false});
+    window.onload = init;
+    
+    function init(){
       DBR.addListener('onFrameRead', async (retObj) => {
         console.log(retObj);
         let results = retObj["results"];
@@ -32,9 +33,17 @@
           document.getElementById("results").innerHTML = text;
           document.getElementById("content").style.display = "";
           document.body.style.backgroundColor = "white";
+          await DBR.stopScan();
         }
-        
       });
+      alert("Listener added. You can now start scanning");
+    }
+    
+    async function startScan(){
+      document.getElementById("content").style.display = "none";
+      document.body.style.backgroundColor = "transparent";
+      await DBR.startScan({});
+      
     }
 
     function GoToJS(){

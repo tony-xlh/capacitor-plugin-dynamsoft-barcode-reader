@@ -37,16 +37,16 @@ public class DBRPlugin extends Plugin {
     private DCECameraView mCameraView;
     private BarcodeReader reader = null;
     private String currentCallbackID;
-    private boolean continuous = false;
     @PluginMethod
     public void destroy(PluginCall call) {
         if (reader!=null){
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
+                    Log.d("DBR","destroy");
                     ((ViewGroup) bridge.getWebView().getParent()).removeView(mCameraView);
                     mCameraView = null;
-                    mCameraEnhancer=null;
-                    reader=null;
+                    mCameraEnhancer = null;
+                    reader = null;
                     nullifyPreviousCall();
                 }
             });
@@ -58,8 +58,22 @@ public class DBRPlugin extends Plugin {
         nullifyPreviousCall();
         call.setKeepAlive(true);
         currentCallbackID = call.getCallbackId();
-        this.continuous=call.getBoolean("continuous",false);
-        init();
+        if (mCameraEnhancer==null){
+            initAndStart();
+        }else{
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    try {
+                        mCameraEnhancer.open();
+                        makeWebViewTransparent();
+                    } catch (CameraEnhancerException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        }
+
     }
 
     private void nullifyPreviousCall(){
@@ -78,22 +92,17 @@ public class DBRPlugin extends Plugin {
                     initDBR();
                     initDCE();
                     bindDBRandDCE();
-                    makeWebViewTransparent();
-                }else{
-                    makeWebViewTransparent();
-                    try {
-                        mCameraEnhancer.open();
-                    } catch (CameraEnhancerException e) {
-                        e.printStackTrace();
-                    }
                 }
                 if (call.hasOption("template")){
                     reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
                 }else{
                     reader.resetRuntimeSettings();
                 }
+
+                makeWebViewTransparent();
+                mCameraEnhancer.open();
                 call.resolve();
-            } catch (BarcodeReaderException e) {
+            } catch (BarcodeReaderException | CameraEnhancerException e) {
                 e.printStackTrace();
                 call.reject(e.getMessage());
             }
@@ -101,7 +110,7 @@ public class DBRPlugin extends Plugin {
     }
 
 
-    private void init(){
+    private void initAndStart(){
         InitThread t = new InitThread();
         getActivity().runOnUiThread(t);
     }
@@ -158,15 +167,8 @@ public class DBRPlugin extends Plugin {
                     ret.put("frameWidth",rotatedBitmap.getWidth());
                     ret.put("frameHeight",rotatedBitmap.getHeight());
                     Log.d("DBR","Found "+textResults.length+" barcode(s).");
-                    if (continuous==false){
-                        try {
-                            mCameraEnhancer.close();
-                        } catch (CameraEnhancerException e) {
-                            e.printStackTrace();
-                        }
-                        restoreWebViewBackground();
-                    }
                     notifyListeners("onFrameRead",ret);
+
                 } catch (BarcodeReaderException e) {
                     e.printStackTrace();
                 }

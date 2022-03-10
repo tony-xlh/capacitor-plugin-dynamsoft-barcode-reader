@@ -139,13 +139,12 @@ removeAllListeners() => Promise<void>
 
 #### ScanOptions
 
-| Prop                 | Type                 |
-| -------------------- | -------------------- |
-| **`license`**        | <code>string</code>  |
-| **`organizationID`** | <code>string</code>  |
-| **`dceLicense`**     | <code>string</code>  |
-| **`template`**       | <code>string</code>  |
-| **`continuous`**     | <code>boolean</code> |
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`license`**        | <code>string</code> |
+| **`organizationID`** | <code>string</code> |
+| **`dceLicense`**     | <code>string</code> |
+| **`template`**       | <code>string</code> |
 
 
 #### PluginListenerHandle

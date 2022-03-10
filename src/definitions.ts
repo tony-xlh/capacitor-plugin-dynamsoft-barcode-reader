@@ -21,7 +21,6 @@ export interface ScanOptions {
   organizationID?: string;
   dceLicense?:string;
   template?:string;
-  continuous?:boolean;
 }
 
 export interface ScanResult{

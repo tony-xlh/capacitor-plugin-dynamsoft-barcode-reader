@@ -8,14 +8,13 @@ import DynamsoftCameraEnhancer
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(DBRPlugin)
-public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResultDelegate  {
+public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameListener  {
 
     private let implementation = DBR()
     var dce:DynamsoftCameraEnhancer! = nil
     var dceView:DCECameraView! = nil
     var barcodeReader:DynamsoftBarcodeReader! = nil
     var callBackId:String = "";
-    var continuous:Bool = false;
     
     @objc func destroy(_ call: CAPPluginCall) {
         if (barcodeReader == nil) {
@@ -42,7 +41,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
     @objc func startScan(_ call: CAPPluginCall) {
         NSLog("scanning")
         nullifyPreviousCall()
-        continuous=call.getBool("continuous", false)
         call.keepAlive = true;
         bridge?.saveCall(call)
         callBackId = call.callbackId;
@@ -51,7 +49,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
             configurationDBR()
             configurationDCE()
         }else{
-            dce.resume()
+            dce.open()
         }
         let template = call.getString("template") ?? ""
         NSLog("template")
@@ -98,8 +96,26 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
         if (dce == nil){
             call.reject("not initialized")
         }else{
-            dce.pause()
+            dce.close()
             restoreWebViewBackground()
+            call.resolve()
+        }
+    }
+    
+    @objc func resumeScan(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            dce.resume()
+            call.resolve()
+        }
+    }
+    
+    @objc func pauseScan(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            dce.pause()
             call.resolve()
         }
     }
@@ -127,22 +143,97 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
             dce = DynamsoftCameraEnhancer.init(view: dceView)
             
         }
+        dce.addListener(self)
         dce.open()
-        bindDCEtoDBR()
     }
 
-    func bindDCEtoDBR(){
-        // Create settings of video barcode reading.
-        let para = iDCESettingParameters.init()
-        // This cameraInstance is the instance of the Dynamsoft Camera Enhancer.
-        // The Barcode Reader will use this instance to take control of the camera and acquire frames from the camera to start the barcode decoding process.
-        para.cameraInstance = dce
-        // Make this setting to get the result. The result will be an object that contains text result and other barcode information.
-        para.textResultDelegate = self
-        // Bind the Camera Enhancer instance to the Barcode Reader instance.
-        barcodeReader.setCameraEnhancerPara(para)
+    
+    public func frameOutPutCallback(_ frame: DCEFrame, timeStamp: TimeInterval) {
+        if dce == nil {
+            return
+        }
+        guard let image = frame.toUIImage() else {
+            print("Failed to get image!")
+            return
+        }
+        
+        NSLog("orientation: %d", frame.orientation)
+        
+        let rotatedImage = rotated(degrees:CGFloat(frame.orientation), image: image) ?? image
+
+        print(rotatedImage.size.width)
+        print(rotatedImage.size.height)
+        let results = try? barcodeReader.decode(rotatedImage, withTemplate: "");
+        let count = results?.count ?? 0
+        NSLog("Found %d barcode(s)", count)
+        var ret = PluginCallResultData()
+        let array = NSMutableArray();
+        for index in 0..<count {
+            let tr = results![index]
+            let points = tr.localizationResult?.resultPoints as! [CGPoint]
+            var result = PluginCallResultData()
+            result["barcodeText"] = tr.barcodeText
+            result["barcodeFormat"] = tr.barcodeFormatString
+            result["barcodeBytesBase64"] = tr.barcodeBytes?.base64EncodedString()
+            result["x1"] = points[0].x
+            result["y1"] = points[0].y
+            result["x2"] = points[1].x
+            result["y2"] = points[1].y
+            result["x3"] = points[2].x
+            result["y3"] = points[2].y
+            result["x4"] = points[3].x
+            result["y4"] = points[3].y
+            array.add(result)
+        }
+        ret["results"]=array
+        ret["frameWidth"] = Int(rotatedImage.size.width)
+        ret["frameHeight"] = Int(rotatedImage.size.height)
+        notifyListeners("onFrameRead", data: ret)
     }
     
+    func rotated(degrees: CGFloat, image: UIImage) -> UIImage? {
+        
+        let degreesToRadians: (CGFloat) -> CGFloat = { (degrees: CGFloat) in
+          return degrees / 180.0 * CGFloat.pi
+        }
+        
+        // Calculate the size of the rotated view's containing box for our drawing space
+        let rotatedViewBox: UIView = UIView(frame: CGRect(origin: .zero, size: image.size))
+        rotatedViewBox.transform = CGAffineTransform(rotationAngle: degreesToRadians(degrees))
+        let rotatedSize: CGSize = rotatedViewBox.frame.size
+
+        // Create the bitmap context
+        UIGraphicsBeginImageContextWithOptions(rotatedSize, false, 0.0)
+
+        guard let bitmap: CGContext = UIGraphicsGetCurrentContext(), let unwrappedCgImage: CGImage = image.cgImage else {
+          return nil
+        }
+
+        // Move the origin to the middle of the image so we will rotate and scale around the center.
+        bitmap.translateBy(x: rotatedSize.width/2.0, y: rotatedSize.height/2.0)
+
+        // Rotate the image context
+        bitmap.rotate(by: degreesToRadians(degrees))
+
+        bitmap.scaleBy(x: CGFloat(1.0), y: -1.0)
+
+        let rect: CGRect = CGRect(
+            x: -image.size.width/2,
+            y: -image.size.height/2,
+            width: image.size.width,
+            height: image.size.height)
+
+        bitmap.draw(unwrappedCgImage, in: rect)
+
+        guard let newImage: UIImage = UIGraphicsGetImageFromCurrentImageContext() else {
+          return nil
+        }
+
+        UIGraphicsEndImageContext()
+
+        return newImage
+      }
+
     public func dlsLicenseVerificationCallback(_ isSuccess: Bool, error: Error?) {
         var msg:String? = nil
         if(error != nil)
@@ -162,33 +253,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DBRTextResu
                 }
                 showResult("Server license verify failed", msg!, "OK") {
                 }
-            }
-        }
-    }
-    
-    // Obtain the recognized barcode results from the textResultCallback and display the results
-    public func textResultCallback(_ frameId: Int, results: [iTextResult]?, userData: NSObject?) {
-        if dce == nil {
-            return
-        }
-        let count = results?.count ?? 0
-        if count > 0 {
-            NSLog("Found barcodes")
-            var ret = PluginCallResultData()
-            let array = NSMutableArray();
-            for index in 0..<count {
-                let tr = results![index]
-                var result = PluginCallResultData()
-                result["barcodeText"] = tr.barcodeText
-                result["barcodeFormat"] = tr.barcodeFormatString
-                result["barcodeBytesBase64"] = tr.barcodeBytes?.base64EncodedString()
-                array.add(result)
-            }
-            ret["results"]=array
-            notifyListeners("onFrameRead", data: ret)
-            if (continuous==false){
-                dce.pause()
-                restoreWebViewBackground()
             }
         }
     }

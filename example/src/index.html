@@ -19,17 +19,19 @@
   <div id="content">
     <h1>Dynamsoft Barcode Reader Example</h1>
     <p>Result:<div id="results"></div></p>
-    <button type="button" onClick="startScan()" disabled>Start Scan</button>
+    <button type="button" onClick="startScan()">Start Scan</button>
     <input id="continuousChechBox" type="checkbox" name="options" value="continuous" checked="checked"/>Continuous Scan
     <p>This example uses the Android/iOS version of Dynamsoft Barcode Reader. You can also try <a onclick='GoToJS()' style="text-decoration:underline;">the JavaScript version</a>.</p>
   </div>
   <div class="overlay"></div>
   
   <script>
-    window.onload = init;
-    
-    function init(){
-      DBR.addListener('onFrameRead', async (retObj) => {
+    async function startScan(){
+      document.getElementById("content").style.display = "none";
+      document.body.style.backgroundColor = "transparent";
+      addSVGOverlay(1920,1080);
+      await DBR.startScan({});
+       DBR.addListener('onFrameRead', async (retObj) => {
         console.log(retObj);
         let results = retObj["results"];
         if (results.length>0) {
@@ -38,25 +40,17 @@
             const result = results[index];
             text = text + result.barcodeText + "<br/>";
           }
-          document.getElementById("results").innerHTML = text;
-          document.getElementById("content").style.display = "";
-          document.body.style.backgroundColor = "white";
           if (document.getElementById("continuousChechBox").checked == false){
+            document.getElementById("results").innerHTML = text;
+            document.getElementById("content").style.display = "";
+            document.body.style.backgroundColor = "white";
+            var overlayContainer = document.getElementsByClassName("overlay")[0];
+            overlayContainer.innerHTML = "";
             await DBR.stopScan();
-          } else{
-            showOverlayOnSVG(retObj);
           }
-          
         }
+        showOverlayOnSVG(retObj);
       });
-      document.getElementsByTagName("button")[0].disabled = "";
-    }
-    
-    async function startScan(){
-      document.getElementById("content").style.display = "none";
-      document.body.style.backgroundColor = "transparent";
-      addSVGOverlay(1920,1080);
-      await DBR.startScan({});
       
     }
 

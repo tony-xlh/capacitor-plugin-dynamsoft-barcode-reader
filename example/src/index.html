@@ -13,6 +13,13 @@
       stroke:green;
       stroke-width:1;
     }
+    
+    #closeButton {
+      top: 0;
+      right: 0;
+      position: absolute;
+      z-index: 999;
+    }
 </style>
 </head>
 <body>
@@ -24,15 +31,21 @@
     <p>This example uses the Android/iOS version of Dynamsoft Barcode Reader. You can also try <a onclick='GoToJS()' style="text-decoration:underline;">the JavaScript version</a>.</p>
   </div>
   <div class="overlay"></div>
+  <div class="controls">
+      <button id="closeButton" type="button" onClick="stopScan()">Close</button>
+  </div>
   
   <script>
+    document.getElementsByClassName("controls")[0].style.display = "none";
     async function startScan(){
       document.getElementById("content").style.display = "none";
       document.body.style.backgroundColor = "transparent";
+      document.getElementsByClassName("controls")[0].style.display = "";
       addSVGOverlay(1920,1080);
+      
       await DBR.startScan({});
-       DBR.addListener('onFrameRead', async (retObj) => {
-        console.log(retObj);
+      
+      DBR.addListener('onFrameRead', async (retObj) => {
         let results = retObj["results"];
         if (results.length>0) {
           let text = "";
@@ -41,12 +54,7 @@
             text = text + result.barcodeText + "<br/>";
           }
           if (document.getElementById("continuousChechBox").checked == false){
-            document.getElementById("results").innerHTML = text;
-            document.getElementById("content").style.display = "";
-            document.body.style.backgroundColor = "white";
-            var overlayContainer = document.getElementsByClassName("overlay")[0];
-            overlayContainer.innerHTML = "";
-            await DBR.stopScan();
+            stopScan(text);
           }
         }
         showOverlayOnSVG(retObj);
@@ -110,6 +118,19 @@
       pointsData = pointsData+ lr.x3+","+lr.y3 + " ";
       pointsData = pointsData+ lr.x4+","+lr.y4;
       return pointsData;
+    }
+    
+    async function stopScan(resultText){
+      if (!resultText) {
+          resultText = "";
+      }
+      document.getElementById("results").innerHTML = resultText;
+      document.getElementById("content").style.display = "";
+      document.body.style.backgroundColor = "white";
+      document.getElementsByClassName("controls")[0].style.display = "none";
+      var overlayContainer = document.getElementsByClassName("overlay")[0];
+      overlayContainer.innerHTML = "";
+      await DBR.stopScan();
     }
   </script>
 </body>

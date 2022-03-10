@@ -8,4 +8,6 @@ CAP_PLUGIN(DBRPlugin, "DBR",
            CAP_PLUGIN_METHOD(startScan, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(toggleTorch, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(stopScan, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(pauseScan, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(resumeScan, CAPPluginReturnPromise);
 )

@@ -2,7 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 
 import type { DBRPlugin, ScanOptions, ScanResult, TextResult } from './definitions';
 import DBR, { BarcodeScanner, TextResult as DBRTextResult } from "dynamsoft-javascript-barcode";
-DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.6.3/dist/";
+DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.7/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private scanner!: BarcodeScanner;
@@ -93,7 +93,8 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
           this.scanner.hide();
         }
       };
-      this.scanner.UIElement.getElementsByClassName("dbrScanner-btn-close")[0].remove();
+      this.scanner.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
+      this.scanner.getUIElement().getElementsByClassName("dbrScanner-cvs-drawarea")[0].remove();
     }else{
       console.log("Scanner already initialized.");
     }

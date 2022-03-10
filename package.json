@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@capacitor/android": "^3.0.0",
+    "@capacitor/core": "^3.4.3",
     "@capacitor/docgen": "^0.0.10",
     "@capacitor/ios": "^3.0.0",
     "@ionic/eslint-config": "^0.3.0",
@@ -74,6 +75,6 @@
   "dependencies": {
     "@types/node": "^16.11.7",
     "download": "^8.0.0",
-    "dynamsoft-javascript-barcode": "^8.6.3"
+    "dynamsoft-javascript-barcode": "^8.8.7"
   }
 }

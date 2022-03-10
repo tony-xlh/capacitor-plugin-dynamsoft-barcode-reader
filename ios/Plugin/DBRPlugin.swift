@@ -49,7 +49,9 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
             configurationDBR()
             configurationDCE()
         }else{
-            dce.open()
+            DispatchQueue.main.sync {
+                dce.open()
+            }
         }
         let template = call.getString("template") ?? ""
         NSLog("template")
@@ -96,8 +98,8 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
         if (dce == nil){
             call.reject("not initialized")
         }else{
-            dce.close()
             restoreWebViewBackground()
+            dce.close()
             call.resolve()
         }
     }
@@ -141,10 +143,10 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
             dceView.overlayVisible = true
             self.webView!.superview!.insertSubview(dceView, belowSubview: self.webView!)
             dce = DynamsoftCameraEnhancer.init(view: dceView)
+            dce.open()
             
         }
         dce.addListener(self)
-        dce.open()
     }
 
     
@@ -234,10 +236,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
             let err = error as NSError?
             if err?.code == -1009 {
                 msg = "Unable to connect to the public Internet to acquire a license. Please connect your device to the Internet or contact support@dynamsoft.com to acquire an offline license."
-                showResult("No Internet", msg!, "Try Again") { [weak self] in
-                    self?.configurationDBR()
-                    self?.configurationDCE()
-                }
+                showResult("No Internet", msg!, "Try Again") {}
             }else{
                 msg = err!.userInfo[NSUnderlyingErrorKey] as? String
                 if(msg == nil)

@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DBRPlugin, ScanOptions, ScanResult, TextResult } from './definitions';
+import type { DBRPlugin, Options, ScanResult, TextResult } from './definitions';
 import DBR, { BarcodeScanner, TextResult as DBRTextResult } from "dynamsoft-javascript-barcode";
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.7/dist/";
 
@@ -46,13 +46,15 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return
   }
 
-  async startScan(options:ScanOptions): Promise<void> {
+  async init(options?:Options): Promise<{success:boolean}> {
     if (this.scanner === undefined){
-      if (options.organizationID){
-        DBR.BarcodeScanner.organizationID = options.organizationID;
-        console.log("set organization ID");
-      }else if (options.license){
-        DBR.BarcodeScanner.productKeys = options.license;
+      if (options) {
+        if (options.organizationID){
+          DBR.BarcodeScanner.organizationID = options.organizationID;
+          console.log("set organization ID");
+        }else if (options.license){
+          DBR.BarcodeScanner.productKeys = options.license;
+        }
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
       this.scanner.onFrameRead = results => {
@@ -88,13 +90,17 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }else{
       console.log("Scanner already initialized.");
     }
+    return {success:true};
+  }
+
+  async initRuntimeSettingsWithString(options: { template: string; }): Promise<void> {
     if (options.template){
       await this.scanner.initRuntimeSettingsWithString(options.template);
       console.log("Using template");
-    }else{
-      console.log("Reset settings");
-      await this.scanner.resetRuntimeSettings();
     }
+  }
+
+  async startScan(): Promise<void> {
     await this.scanner.show();
   }
 

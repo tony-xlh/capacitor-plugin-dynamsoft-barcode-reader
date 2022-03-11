@@ -1,8 +1,10 @@
 import { PluginListenerHandle } from "@capacitor/core";
 
 export interface DBRPlugin {
-  startScan(options: ScanOptions): Promise<void>;
+  init(options?: Options): Promise<{success?: boolean, message?: string}>;
+  initRuntimeSettingsWithString(options: {template: string}): Promise<void>;
   toggleTorch(options: {on: boolean}): Promise<void>;
+  startScan(): Promise<void>;
   stopScan(): Promise<void>;
   resumeScan(): Promise<void>;
   pauseScan(): Promise<void>;
@@ -16,7 +18,7 @@ export interface DBRPlugin {
 
 export type onFrameReadListener = (result:ScanResult) => void;
 
-export interface ScanOptions {
+export interface Options {
   license?: string;
   organizationID?: string;
   dceLicense?:string;

@@ -32,8 +32,10 @@ npx cap sync
 
 <docgen-index>
 
-* [`startScan(...)`](#startscan)
+* [`init(...)`](#init)
+* [`initRuntimeSettingsWithString(...)`](#initruntimesettingswithstring)
 * [`toggleTorch(...)`](#toggletorch)
+* [`startScan()`](#startscan)
 * [`stopScan()`](#stopscan)
 * [`resumeScan()`](#resumescan)
 * [`pauseScan()`](#pausescan)
@@ -47,15 +49,30 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### startScan(...)
+### init(...)
 
 ```typescript
-startScan(options: ScanOptions) => Promise<void>
+init(options?: Options | undefined) => Promise<{ success?: boolean; message?: string; }>
 ```
 
-| Param         | Type                                                |
-| ------------- | --------------------------------------------------- |
-| **`options`** | <code><a href="#scanoptions">ScanOptions</a></code> |
+| Param         | Type                                        |
+| ------------- | ------------------------------------------- |
+| **`options`** | <code><a href="#options">Options</a></code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
+### initRuntimeSettingsWithString(...)
+
+```typescript
+initRuntimeSettingsWithString(options: { template: string; }) => Promise<void>
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ template: string; }</code> |
 
 --------------------
 
@@ -69,6 +86,15 @@ toggleTorch(options: { on: boolean; }) => Promise<void>
 | Param         | Type                          |
 | ------------- | ----------------------------- |
 | **`options`** | <code>{ on: boolean; }</code> |
+
+--------------------
+
+
+### startScan()
+
+```typescript
+startScan() => Promise<void>
+```
 
 --------------------
 
@@ -137,7 +163,7 @@ removeAllListeners() => Promise<void>
 ### Interfaces
 
 
-#### ScanOptions
+#### Options
 
 | Prop                 | Type                |
 | -------------------- | ------------------- |

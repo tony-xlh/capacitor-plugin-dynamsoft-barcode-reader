@@ -8,21 +8,30 @@ export interface DBRPlugin {
   stopScan(): Promise<void>;
   resumeScan(): Promise<void>;
   pauseScan(): Promise<void>;
+  getAllCameras(): Promise<{cameras?: string[], message?: string}>;
+  selectCamera(options: {cameraID: string}): Promise<{success?: boolean, message?: string}>;
+  getResolution(): Promise<{resolution?: string, message?: string}>;
+  setResolution(options: {resolution: number}): Promise<{success?: boolean, message?: string}>;
+  stopScan(): Promise<void>;
   destroy(): Promise<void>;
   addListener(
     eventName: 'onFrameRead',
     listenerFunc: onFrameReadListener,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  addListener(
+    eventName: 'onPlayed ',
+    listenerFunc: onPlayedListener,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
   removeAllListeners(): Promise<void>;
 }
 
 export type onFrameReadListener = (result:ScanResult) => void;
+export type onPlayedListener = (result:{resolution:string}) => void;
 
 export interface Options {
   license?: string;
   organizationID?: string;
   dceLicense?:string;
-  template?:string;
 }
 
 export interface ScanResult{
@@ -43,4 +52,13 @@ export interface TextResult{
   y3: number;
   x4: number;
   y4: number;
+}
+
+export enum EnumResolution {
+  RESOLUTION_AUTO = 0,
+  RESOLUTION_480P = 1,
+  RESOLUTION_720P = 2,
+  RESOLUTION_1080P = 3,
+  RESOLUTION_2K = 4,
+  RESOLUTION_4K = 5
 }

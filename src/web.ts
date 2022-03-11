@@ -1,7 +1,8 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DBRPlugin, Options, ScanResult, TextResult } from './definitions';
+import { DBRPlugin, EnumResolution, Options, ScanResult, TextResult } from './definitions';
 import DBR, { BarcodeScanner, TextResult as DBRTextResult } from "dynamsoft-javascript-barcode";
+
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.7/dist/";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
@@ -57,6 +58,9 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
         }
       }
       this.scanner = await DBR.BarcodeScanner.createInstance();
+      this.scanner.onPlayed = rsl => {
+        this.notifyListeners("onPlayed", {resolution:rsl.width+"x"+rsl.height})
+      };
       this.scanner.onFrameRead = results => {
         var textResults = [];
         for (let index = 0; index < results.length; index++) {
@@ -87,6 +91,8 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       };
       this.scanner.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
       this.scanner.getUIElement().getElementsByClassName("dbrScanner-cvs-drawarea")[0].remove();
+      this.scanner.getUIElement().getElementsByClassName("dce-sel-camera")[0].remove();
+      this.scanner.getUIElement().getElementsByClassName("dce-sel-resolution")[0].remove();
     }else{
       console.log("Scanner already initialized.");
     }
@@ -114,5 +120,56 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return window.btoa( binary );
   }
 
+  async getAllCameras(): Promise<{ cameras?: string[] | undefined; message?: string | undefined; }> {
+    let cameras = await this.scanner.getAllCameras();
+    let labels:string[] = [];
+    cameras.forEach(camera => {
+      labels.push(camera.label);
+    });
+    return {cameras:labels};
+  }
+
+  async selectCamera(options: { cameraID: string; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
+    let cameras = await this.scanner.getAllCameras()
+    cameras.forEach(async camera => {
+      if (camera.label == options.cameraID) {
+        await this.scanner.setCurrentCamera(camera);
+        return {success:true};
+      }
+    });
+    return {message:"not found"};
+  }
+
+  async getResolution(): Promise<{ resolution?: string | undefined; message?: string | undefined; }> {
+    let rsl = this.scanner.getResolution();
+    let res:string = rsl[0] + "x" + rsl[1];
+    return {resolution:res};
+  }
+
+  async setResolution(options: { resolution: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
+    let res = options.resolution;
+    let width = 1280;
+    let height = 720;
+
+    if (res == EnumResolution.RESOLUTION_480P){
+       width = 640;
+       height = 480;
+    } else if (res == EnumResolution.RESOLUTION_720P){
+      width = 1280;
+      height = 720;
+    } else if (res == EnumResolution.RESOLUTION_1080P){
+      width = 1920;
+      height = 1080;
+    } else if (res == EnumResolution.RESOLUTION_2K){
+      width = 2560;
+      height = 1440;
+    } else if (res == EnumResolution.RESOLUTION_4K){
+      width = 3840;
+      height = 2160;
+    }
+
+    await this.scanner.setResolution(width,height);
+    return {success:true};
+  }
 
 }

@@ -32,7 +32,9 @@
   </div>
   <div class="overlay"></div>
   <div class="controls">
-      <button id="closeButton" type="button" onClick="stopScan()">Close</button>
+    <select id="cameraSelect" style="position:absolute;left:0;top:0;z-index:999;"></select>
+    <select id="resolutionSelect" style="position:absolute;left:0;top:20px;z-index:999;"></select>
+    <button id="closeButton" type="button" onClick="stopScan()">Close</button>
   </div>
   
   <script>
@@ -45,10 +47,54 @@
       if (result) {
         if (result.success == true) {
           document.getElementsByTagName("button")[0].disabled = "";
+          loadCameras();
+          loadResolutions();
           return;
         }
       }
       alert("failed to initialize.");
+    }
+
+    async function loadCameras(){
+      let cameraSelect = document.getElementById("cameraSelect");
+      let result = await DBR.getAllCameras();
+      let cameras = result.cameras;
+      for (let i = 0; i < cameras.length; i++) {
+        cameraSelect.appendChild(new Option(cameras[i], i));
+      }
+      cameraSelect.addEventListener("change", async function() {
+        console.log("camera changed");
+        let camSelect = document.getElementById("cameraSelect");
+        await DBR.selectCamera({cameraID:camSelect.selectedOptions[0].label});
+      });
+    }
+    
+    function loadResolutions(){
+      let resSelect = document.getElementById("resolutionSelect");
+      resSelect.appendChild(new Option("ask 480P", 1));
+      resSelect.appendChild(new Option("ask 720P", 2));
+      resSelect.appendChild(new Option("ask 1080P", 3));
+      resSelect.appendChild(new Option("ask 2K", 4));
+      resSelect.appendChild(new Option("ask 4K", 5));
+      resSelect.addEventListener("change", async function() {
+        let resSelect = document.getElementById("resolutionSelect");
+        let lbl = resSelect.selectedOptions[0].label;
+        if (lbl.indexOf("ask") != -1) {
+          await DBR.setResolution({resolution:resSelect.selectedOptions[0].value});
+        }
+      });
+    }
+
+    async function updateResolutionSelect(newRes){
+      let resSelect = document.getElementById("resolutionSelect");
+      for (let index = resSelect.options.length - 1; index >=0 ; index--) {
+        let option = resSelect.options[index];
+        if (option.label.indexOf("got") != -1) {
+          resSelect.removeChild(option);
+        }
+      }
+      resSelect.appendChild(new Option("got "+newRes,"got "+newRes));
+      resSelect.selectedIndex = resSelect.length - 1;
     }
     
     async function startScan(){
@@ -56,9 +102,11 @@
       document.body.style.backgroundColor = "transparent";
       document.getElementsByClassName("controls")[0].style.display = "";
       addSVGOverlay(1920,1080);
-      
-      await DBR.startScan();
-      
+      DBR.addListener('onPlayed', async (result) => {
+        console.log("onPlayed");
+        console.log(result);
+        updateResolutionSelect(result.resolution);
+      });
       DBR.addListener('onFrameRead', async (retObj) => {
         let results = retObj["results"];
         if (results.length>0) {
@@ -73,6 +121,11 @@
         }
         showOverlayOnSVG(retObj);
       });
+
+      await DBR.startScan();
+      
+      
+
       
     }
 

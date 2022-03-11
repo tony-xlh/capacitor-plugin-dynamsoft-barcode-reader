@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
+import android.util.Size;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -15,19 +15,13 @@ import com.dynamsoft.dce.DCECameraView;
 import com.dynamsoft.dce.DCEFrame;
 import com.dynamsoft.dce.DCEFrameListener;
 import com.dynamsoft.dce.DCELicenseVerificationListener;
+import com.dynamsoft.dce.EnumResolution;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Field;
-
 
 @CapacitorPlugin(name = "DBR")
 public class DBRPlugin extends Plugin {
@@ -81,7 +75,6 @@ public class DBRPlugin extends Plugin {
             e.printStackTrace();
             call.reject(e.getMessage());
         }
-        Log.d("DBR","inited");
         JSObject result = new JSObject();
         result.put("success",true);
         call.resolve(result);
@@ -102,6 +95,106 @@ public class DBRPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void selectCamera(PluginCall call){
+        if (call.hasOption("cameraID")){
+            try {
+                Runnable selectCameraRunnable = new Runnable() {
+                    public void run() {
+                        try {
+                            mCameraEnhancer.selectCamera(call.getString("cameraID"));
+                        } catch (CameraEnhancerException e) {
+                            e.printStackTrace();
+                        }
+                        synchronized(this)
+                        {
+                            this.notify();
+                        }
+                    }
+                };
+                synchronized( selectCameraRunnable ) {
+                    getActivity().runOnUiThread(selectCameraRunnable);
+                    selectCameraRunnable.wait();
+                }
+
+                triggerOnPlayed();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                call.reject(e.getMessage());
+            }
+        }
+        JSObject result = new JSObject();
+        result.put("success",true);
+        call.resolve(result);
+    }
+
+    private void triggerOnPlayed(){
+        Size res = mCameraEnhancer.getResolution();
+        JSObject onPlayedResult = new JSObject();
+        onPlayedResult.put("resolution",res.getWidth() + "x" + res.getHeight());
+        notifyListeners("onPlayed",onPlayedResult);
+    }
+
+    @PluginMethod
+    public void getAllCameras(PluginCall call){
+        if (mCameraEnhancer == null) {
+            call.reject("not initialized");
+        }else {
+            JSObject result = new JSObject();
+            JSArray cameras = new JSArray();
+            for (String camera: mCameraEnhancer.getAllCameras()) {
+                cameras.put(camera);
+            }
+            result.put("cameras",cameras);
+            call.resolve(result);
+        }
+    }
+
+    @PluginMethod
+    public void setResolution(PluginCall call){
+        if (call.hasOption("resolution")){
+            try {
+                Runnable setResolutionRunnable = new Runnable() {
+                    public void run() {
+                        try {
+                            String res = call.getString("resolution");
+                            mCameraEnhancer.setResolution(EnumResolution.fromValue(Integer.parseInt(res)));
+                        } catch (CameraEnhancerException e) {
+                            e.printStackTrace();
+                        }
+                        synchronized(this)
+                        {
+                            this.notify();
+                        }
+                    }
+                };
+                synchronized( setResolutionRunnable ) {
+                    getActivity().runOnUiThread(setResolutionRunnable);
+                    setResolutionRunnable.wait();
+                }
+                triggerOnPlayed();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                call.reject(e.getMessage());
+            }
+        }
+        JSObject result = new JSObject();
+        result.put("success",true);
+        call.resolve(result);
+    }
+
+    @PluginMethod
+    public void getResolution(PluginCall call){
+        if (mCameraEnhancer == null) {
+            call.reject("not initialized");
+        }else{
+            String res = mCameraEnhancer.getResolution().getWidth()+"x"+mCameraEnhancer.getResolution().getHeight();
+            JSObject result = new JSObject();
+            result.put("resolution",res);
+            call.resolve(result);
+        }
+    }
+
+    @PluginMethod
     public void startScan(PluginCall call) {
         nullifyPreviousCall();
         call.setKeepAlive(true);
@@ -111,6 +204,7 @@ public class DBRPlugin extends Plugin {
                 try {
                     mCameraEnhancer.open();
                     makeWebViewTransparent();
+                    triggerOnPlayed();
                     call.resolve();
                 } catch (CameraEnhancerException e) {
                     e.printStackTrace();
@@ -159,6 +253,7 @@ public class DBRPlugin extends Plugin {
         mCameraEnhancer = new CameraEnhancer(getActivity());
         mCameraView = new DCECameraView(getActivity());
         mCameraEnhancer.setCameraView(mCameraView);
+        mCameraView.setOverlayVisible(true);
         FrameLayout.LayoutParams cameraPreviewParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
@@ -179,7 +274,6 @@ public class DBRPlugin extends Plugin {
                     ret.put("frameHeight",rotatedBitmap.getHeight());
                     Log.d("DBR","Found "+textResults.length+" barcode(s).");
                     notifyListeners("onFrameRead",ret);
-
                 } catch (BarcodeReaderException e) {
                     e.printStackTrace();
                 }

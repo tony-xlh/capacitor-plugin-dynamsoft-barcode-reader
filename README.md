@@ -39,7 +39,13 @@ npx cap sync
 * [`stopScan()`](#stopscan)
 * [`resumeScan()`](#resumescan)
 * [`pauseScan()`](#pausescan)
+* [`getAllCameras()`](#getallcameras)
+* [`selectCamera(...)`](#selectcamera)
+* [`getResolution()`](#getresolution)
+* [`setResolution(...)`](#setresolution)
+* [`stopScan()`](#stopscan)
 * [`destroy()`](#destroy)
+* [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
@@ -126,6 +132,67 @@ pauseScan() => Promise<void>
 --------------------
 
 
+### getAllCameras()
+
+```typescript
+getAllCameras() => Promise<{ cameras?: string[]; message?: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ cameras?: string[]; message?: string; }&gt;</code>
+
+--------------------
+
+
+### selectCamera(...)
+
+```typescript
+selectCamera(options: { cameraID: string; }) => Promise<{ success?: boolean; message?: string; }>
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ cameraID: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
+### getResolution()
+
+```typescript
+getResolution() => Promise<{ resolution?: string; message?: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ resolution?: string; message?: string; }&gt;</code>
+
+--------------------
+
+
+### setResolution(...)
+
+```typescript
+setResolution(options: { resolution: number; }) => Promise<{ success?: boolean; message?: string; }>
+```
+
+| Param         | Type                                 |
+| ------------- | ------------------------------------ |
+| **`options`** | <code>{ resolution: number; }</code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
+### stopScan()
+
+```typescript
+stopScan() => Promise<void>
+```
+
+--------------------
+
+
 ### destroy()
 
 ```typescript
@@ -151,6 +218,22 @@ addListener(eventName: 'onFrameRead', listenerFunc: onFrameReadListener) => Prom
 --------------------
 
 
+### addListener(...)
+
+```typescript
+addListener(eventName: 'onPlayed ', listenerFunc: onPlayedListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                      |
+| ------------------ | --------------------------------------------------------- |
+| **`eventName`**    | <code>"onPlayed "</code>                                  |
+| **`listenerFunc`** | <code>(result: { resolution: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
 ### removeAllListeners()
 
 ```typescript
@@ -170,7 +253,6 @@ removeAllListeners() => Promise<void>
 | **`license`**        | <code>string</code> |
 | **`organizationID`** | <code>string</code> |
 | **`dceLicense`**     | <code>string</code> |
-| **`template`**       | <code>string</code> |
 
 
 #### PluginListenerHandle

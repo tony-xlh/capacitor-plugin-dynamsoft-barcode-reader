@@ -126,9 +126,6 @@
 
       await DBR.startScan();
       
-      
-
-      
     }
 
     function GoToJS(){
@@ -173,10 +170,10 @@
 
           console.log(frameWidth+"x"+frameHeight);
           svg.setAttribute("viewBox","0 0 "+frameWidth+" "+frameHeight);
-          
+
           for(let i = 0; i < results.length; i++){
             var result = results[i];
-            if (scanResult.frameOrientation) {
+            if (scanResult.frameOrientation != undefined) {
               handleRotation(result, scanResult.frameOrientation, frameWidth, frameHeight);
             }
             var points = getPointsData(result);
@@ -199,39 +196,45 @@
     }
 
     function handleRotation(result, rotation, frameWidth, frameHeight){
+      rotation = parseInt(rotation);
       for (let i = 1; i < 5; i++) {
         let x = result["x"+i];
         let y = result["y"+i];
         let rotatedX;
         let rotatedY;
+        
         switch (rotation) {
+          case 0:
+            rotatedX = x;
+            rotatedY = y;
+            if (isFront() == true){ //front cam landscape
+              rotatedX = frameWidth - rotatedX;
+            }
+            break;
           case 90:
             rotatedX = frameWidth - y;
             rotatedY = x;
-            if (isFront()){ //front cam portrait
+            if (isFront() == true){ //front cam portrait
               rotatedY = frameHeight - rotatedY;
             }
             break;
           case 180:
             rotatedX = frameWidth - x;
             rotatedY = frameHeight - y;
-            if (isFront()){ //front cam landscape
+            if (isFront() == true){ //front cam landscape
               rotatedX = frameWidth - rotatedX;
             }
             break;
           case 270:
             rotatedX = frameHeight - y;
             rotatedY = frameWidth - x;
-            if (isFront()){ //front cam portrait
+            if (isFront() == true){ //front cam portrait
               rotatedY = frameHeight - rotatedY;
             }
             break;
           default:
             rotatedX = x;
             rotatedY = y;
-            if (isFront()){ //front cam landscape
-              rotatedX = frameWidth - rotatedX;
-            }
         }
         result["x"+i] = rotatedX;
         result["y"+i] = rotatedY;

@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import { DBRPlugin, EnumResolution, Options, ScanResult, TextResult } from './definitions';
+import { DBRPlugin, EnumResolution, Options, ScanRegion, ScanResult, TextResult } from './definitions';
 import DBR, { BarcodeScanner, TextResult as DBRTextResult } from "dynamsoft-javascript-barcode";
 
 DBR.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.7/dist/";
@@ -81,21 +81,28 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
                 }
           textResults.push(tr)
         }
-        let rsl = this.scanner.getResolution();
-        
-        var ret:ScanResult = {"results":textResults,
-                              "frameWidth": rsl[0],
-                              "frameHeight": rsl[1],
-                              };
+
+        var ret:ScanResult = {"results":textResults};
         this.notifyListeners("onFrameRead", ret);
       };
       this.scanner.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
-      this.scanner.getUIElement().getElementsByClassName("dbrScanner-cvs-drawarea")[0].remove();
+      //this.scanner.getUIElement().getElementsByClassName("dbrScanner-cvs-drawarea")[0].remove();
       this.scanner.getUIElement().getElementsByClassName("dce-sel-camera")[0].remove();
       this.scanner.getUIElement().getElementsByClassName("dce-sel-resolution")[0].remove();
     }else{
       console.log("Scanner already initialized.");
     }
+    return {success:true};
+  }
+
+  async setScanRegion(region:ScanRegion) {
+    let settings = await this.scanner.getRuntimeSettings();
+    settings.region.regionLeft = region.left;
+    settings.region.regionRight = region.right;
+    settings.region.regionTop = region.top;
+    settings.region.regionBottom = region.bottom;
+    settings.region.regionMeasuredByPercentage = region.measuredByPercentage;
+    await this.scanner.updateRuntimeSettings(settings);
     return {success:true};
   }
 

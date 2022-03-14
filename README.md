@@ -43,6 +43,7 @@ npx cap sync
 * [`selectCamera(...)`](#selectcamera)
 * [`getResolution()`](#getresolution)
 * [`setResolution(...)`](#setresolution)
+* [`setScanRegion(...)`](#setscanregion)
 * [`stopScan()`](#stopscan)
 * [`destroy()`](#destroy)
 * [`addListener(...)`](#addlistener)
@@ -184,6 +185,21 @@ setResolution(options: { resolution: number; }) => Promise<{ success?: boolean; 
 --------------------
 
 
+### setScanRegion(...)
+
+```typescript
+setScanRegion(options: ScanRegion) => Promise<{ success?: boolean; message?: string; }>
+```
+
+| Param         | Type                                              |
+| ------------- | ------------------------------------------------- |
+| **`options`** | <code><a href="#scanregion">ScanRegion</a></code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
 ### stopScan()
 
 ```typescript
@@ -253,6 +269,19 @@ removeAllListeners() => Promise<void>
 | **`license`**        | <code>string</code> |
 | **`organizationID`** | <code>string</code> |
 | **`dceLicense`**     | <code>string</code> |
+
+
+#### ScanRegion
+
+measuredByPercentage: 0 in pixel, 1 in percent
+
+| Prop                       | Type                |
+| -------------------------- | ------------------- |
+| **`left`**                 | <code>number</code> |
+| **`top`**                  | <code>number</code> |
+| **`right`**                | <code>number</code> |
+| **`bottom`**               | <code>number</code> |
+| **`measuredByPercentage`** | <code>number</code> |
 
 
 #### PluginListenerHandle

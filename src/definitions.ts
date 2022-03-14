@@ -12,6 +12,7 @@ export interface DBRPlugin {
   selectCamera(options: {cameraID: string}): Promise<{success?: boolean, message?: string}>;
   getResolution(): Promise<{resolution?: string, message?: string}>;
   setResolution(options: {resolution: number}): Promise<{success?: boolean, message?: string}>;
+  setScanRegion(options: ScanRegion): Promise<{success?: boolean, message?: string}>;
   stopScan(): Promise<void>;
   destroy(): Promise<void>;
   addListener(
@@ -36,8 +37,19 @@ export interface Options {
 
 export interface ScanResult{
   results: TextResult[];
-  frameWidth: number;
-  frameHeight: number;
+  frameOrientation?: number;
+  deviceOrientation?: string;
+}
+
+/**
+ * measuredByPercentage: 0 in pixel, 1 in percent
+ */
+export interface ScanRegion{
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  measuredByPercentage: number;
 }
 
 export interface TextResult{

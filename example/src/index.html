@@ -38,17 +38,18 @@
   </div>
   
   <script>
+    let currentResolution = "1920x1080";
     document.getElementsByClassName("controls")[0].style.display = "none";
     window.onload = init;
     
     async function init() {
       let result = await DBR.init();
-      console.log(result);
       if (result) {
         if (result.success == true) {
           document.getElementsByTagName("button")[0].disabled = "";
           loadCameras();
           loadResolutions();
+          await DBR.setScanRegion({left:10,top:20,right:90,bottom:65,measuredByPercentage:1});
           return;
         }
       }
@@ -102,10 +103,11 @@
       document.body.style.backgroundColor = "transparent";
       document.getElementsByClassName("controls")[0].style.display = "";
       addSVGOverlay(1920,1080);
-      DBR.addListener('onPlayed', async (result) => {
+      DBR.addListener('onPlayed', async (resResult) => {
         console.log("onPlayed");
-        console.log(result);
-        updateResolutionSelect(result.resolution);
+        console.log(resResult);
+        currentResolution = resResult.resolution;
+        updateResolutionSelect(resResult.resolution);
       });
       DBR.addListener('onFrameRead', async (retObj) => {
         let results = retObj["results"];
@@ -157,9 +159,26 @@
           var svg = overlayContainer.getElementsByTagName("svg")[0];
           svg.innerHTML=""
           var results = scanResult.results;
-          svg.setAttribute("viewBox","0 0 "+scanResult.frameWidth+" "+scanResult.frameHeight);
+
+          var frameWidth, frameHeight;
+          frameWidth = currentResolution.split("x")[0]; //default is landscape
+          frameHeight = currentResolution.split("x")[1];
+
+          if (scanResult.deviceOrientation) {
+            if (scanResult.deviceOrientation == "portrait") {
+              frameWidth = currentResolution.split("x")[1];
+              frameHeight = currentResolution.split("x")[0];
+            }
+          }
+
+          console.log(frameWidth+"x"+frameHeight);
+          svg.setAttribute("viewBox","0 0 "+frameWidth+" "+frameHeight);
+          
           for(let i = 0; i < results.length; i++){
             var result = results[i];
+            if (scanResult.frameOrientation) {
+              handleRotation(result, scanResult.frameOrientation, frameWidth, frameHeight);
+            }
             var points = getPointsData(result);
             var a = document.createElementNS("http://www.w3.org/2000/svg","a");
             var polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
@@ -176,6 +195,56 @@
             a.append(text);
             svg.append(a);
           }
+      }
+    }
+
+    function handleRotation(result, rotation, frameWidth, frameHeight){
+      for (let i = 1; i < 5; i++) {
+        let x = result["x"+i];
+        let y = result["y"+i];
+        let rotatedX;
+        let rotatedY;
+        switch (rotation) {
+          case 90:
+            rotatedX = frameWidth - y;
+            rotatedY = x;
+            if (isFront()){ //front cam portrait
+              rotatedY = frameHeight - rotatedY;
+            }
+            break;
+          case 180:
+            rotatedX = frameWidth - x;
+            rotatedY = frameHeight - y;
+            if (isFront()){ //front cam landscape
+              rotatedX = frameWidth - rotatedX;
+            }
+            break;
+          case 270:
+            rotatedX = frameHeight - y;
+            rotatedY = frameWidth - x;
+            if (isFront()){ //front cam portrait
+              rotatedY = frameHeight - rotatedY;
+            }
+            break;
+          default:
+            rotatedX = x;
+            rotatedY = y;
+            if (isFront()){ //front cam landscape
+              rotatedX = frameWidth - rotatedX;
+            }
+        }
+        result["x"+i] = rotatedX;
+        result["y"+i] = rotatedY;
+      }
+    }
+
+    function isFront(){
+      let camSelect = document.getElementById("cameraSelect");
+      let label = camSelect.selectedOptions[0].label;
+      if (label.toUpperCase().indexOf("BACK") != -1) { //is back cam
+        return false;
+      }else{
+        return true;
       }
     }
 

@@ -87,7 +87,7 @@ public class DBRPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void init(PluginCall call) {
+    public void initialize(PluginCall call) {
         try {
             if (reader==null) {
                 initDBR(call);

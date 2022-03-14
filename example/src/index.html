@@ -43,7 +43,7 @@
     window.onload = init;
     
     async function init() {
-      let result = await DBR.init();
+      let result = await DBR.initialize();
       if (result) {
         if (result.success == true) {
           document.getElementsByTagName("button")[0].disabled = "";

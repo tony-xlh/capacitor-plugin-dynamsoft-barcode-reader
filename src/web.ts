@@ -47,7 +47,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return
   }
 
-  async init(options?:Options): Promise<{success:boolean}> {
+  async initialize(options?:Options): Promise<{success:boolean}> {
     if (this.scanner === undefined){
       if (options) {
         if (options.organizationID){

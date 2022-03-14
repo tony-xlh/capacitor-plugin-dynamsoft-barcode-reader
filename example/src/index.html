@@ -187,7 +187,7 @@
             text.setAttribute("y",result.y1);
             text.setAttribute("fill","red");
             text.textContent = result.barcodeText;
-            text.style.fontSize = 20;
+            text.style.fontSize = frameWidth/460*20;
             a.append(polygon);
             a.append(text);
             svg.append(a);

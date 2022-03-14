@@ -32,7 +32,7 @@ npx cap sync
 
 <docgen-index>
 
-* [`init(...)`](#init)
+* [`initialize(...)`](#initialize)
 * [`initRuntimeSettingsWithString(...)`](#initruntimesettingswithstring)
 * [`toggleTorch(...)`](#toggletorch)
 * [`startScan()`](#startscan)
@@ -56,10 +56,10 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### init(...)
+### initialize(...)
 
 ```typescript
-init(options?: Options | undefined) => Promise<{ success?: boolean; message?: string; }>
+initialize(options?: Options | undefined) => Promise<{ success?: boolean; message?: string; }>
 ```
 
 | Param         | Type                                        |

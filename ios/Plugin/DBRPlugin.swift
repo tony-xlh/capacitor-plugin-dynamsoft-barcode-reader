@@ -8,13 +8,14 @@ import DynamsoftCameraEnhancer
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(DBRPlugin)
-public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameListener  {
+public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
 
     private let implementation = DBR()
     var dce:DynamsoftCameraEnhancer! = nil
     var dceView:DCECameraView! = nil
     var barcodeReader:DynamsoftBarcodeReader! = nil
     var callBackId:String = "";
+    var timer:Timer! = nil;
     
     @objc func destroy(_ call: CAPPluginCall) {
         if (barcodeReader == nil) {
@@ -38,30 +39,43 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
         }
     }
     
+    @objc func initialize(_ call: CAPPluginCall) {
+        if (barcodeReader == nil){
+            configurationDBR()
+            configurationDCE()
+        }
+        var ret = PluginCallResultData()
+        ret["success"] = true
+        call.resolve(ret)
+    }
+    
+    @objc func initRuntimeSettingsWithString(_ call: CAPPluginCall) {
+        let template = call.getString("template") ?? ""
+        if (template != ""){
+            var error: NSError? = NSError()
+            barcodeReader.initRuntimeSettings(with: template, conflictMode: EnumConflictMode.overwrite, error: &error)
+        }
+        call.resolve()
+    }
+    
     @objc func startScan(_ call: CAPPluginCall) {
-        NSLog("scanning")
         nullifyPreviousCall()
         call.keepAlive = true;
         bridge?.saveCall(call)
         callBackId = call.callbackId;
         makeWebViewTransparent()
-        if (barcodeReader == nil){
-            configurationDBR()
-            configurationDCE()
-        }else{
+        if dce != nil {
             DispatchQueue.main.sync {
                 dce.open()
+                triggerOnPlayed()
+                if timer != nil {
+                    timer.invalidate()
+                }
+                timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(decodingTask), userInfo: nil, repeats: true)
             }
-        }
-        let template = call.getString("template") ?? ""
-        NSLog("template")
-        NSLog(template)
-        if (template != ""){
-            var error: NSError? = NSError()
-            barcodeReader.initRuntimeSettings(with: template, conflictMode: EnumConflictMode.overwrite, error: &error)
         }else{
-            var error: NSError? = NSError()
-            barcodeReader.resetRuntimeSettings(&error)
+            call.reject("not initialized")
+            return
         }
         call.resolve()
     }
@@ -122,6 +136,94 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
         }
     }
     
+    @objc func setResolution(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            let res = call.getString("resolution") ?? "-1"
+            NSLog("Resolution: %@", res)
+            
+            if res != "-1" {
+                let resolution = EnumResolution.init(rawValue: Int(res)!)
+                dce.setResolution(resolution!)
+                triggerOnPlayed()
+            }
+            
+            var ret = PluginCallResultData()
+            ret["success"] = true
+            call.resolve(ret)
+        }
+    }
+    
+    @objc func getResolution(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            var ret = PluginCallResultData()
+            let res = dce.getResolution();
+            dce.getResolution()
+            print("res: "+res)
+            ret["resolution"] = res
+            call.resolve(ret)
+        }
+    }
+    
+    @objc func triggerOnPlayed() {
+        if (dce != nil) {
+            var ret = PluginCallResultData()
+            let res = dce.getResolution();
+            ret["resolution"] = res
+            print("trigger on played")
+            notifyListeners("onPlayed", data: ret)
+        }
+    }
+    
+    @objc func getAllCameras(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            var ret = PluginCallResultData()
+            let array = NSMutableArray();
+            array.addObjects(from: dce.getAllCameras())
+            ret["cameras"] = array
+            call.resolve(ret)
+        }
+    }
+    
+    @objc func selectCamera(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            let cameraID = call.getString("cameraID") ?? ""
+            if cameraID != "" {
+                var error: NSError? = NSError()
+                dce.selectCamera(cameraID, error: &error)
+                triggerOnPlayed()
+            }
+            var ret = PluginCallResultData()
+            ret["success"] = true
+            call.resolve(ret)
+        }
+    }
+    
+    @objc func setScanRegion(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            let scanRegion = iRegionDefinition()
+            scanRegion.regionTop = call.getInt("top")!
+            scanRegion.regionBottom = call.getInt("bottom")!
+            scanRegion.regionLeft = call.getInt("left")!
+            scanRegion.regionRight = call.getInt("right")!
+            scanRegion.regionMeasuredByPercentage = call.getInt("measuredByPercentage")!
+            var error: NSError? = NSError()
+            dce.setScanRegion(scanRegion, error: &error)
+            var ret = PluginCallResultData()
+            ret["success"] = true
+            call.resolve(ret)
+        }
+    }
+    
     func configurationDBR() {
         let dls = iDMDLSConnectionParameters()
         let call = bridge?.savedCall(withID: callBackId);
@@ -143,27 +245,22 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
             dceView.overlayVisible = true
             self.webView!.superview!.insertSubview(dceView, belowSubview: self.webView!)
             dce = DynamsoftCameraEnhancer.init(view: dceView)
-            dce.open()
-            
+            dce.setResolution(EnumResolution.EnumRESOLUTION_720P)
         }
-        dce.addListener(self)
     }
 
-    
-    public func frameOutPutCallback(_ frame: DCEFrame, timeStamp: TimeInterval) {
+    @objc func decodingTask()
+    {
         if dce == nil {
             return
         }
-        guard let image = frame.toUIImage() else {
-            print("Failed to get image!")
+        
+        if dce.getCameraState() != EnumCameraState.EnumCAMERA_STATE_OPENED {
             return
         }
         
-        NSLog("orientation: %d", frame.orientation)
-        
-        let rotatedImage = rotated(degrees:CGFloat(frame.orientation), image: image) ?? image
-
-        let results = try? barcodeReader.decode(rotatedImage, withTemplate: "");
+        let frame = dce.getFrameFromBuffer(false)
+        let results = try? barcodeReader.decodeBuffer(frame.imageData, withWidth: frame.width, height: frame.height, stride: frame.stride, format: EnumImagePixelFormat(rawValue: frame.pixelFormat) ?? EnumImagePixelFormat.NV21, templateName: "")
         let count = results?.count ?? 0
         NSLog("Found %d barcode(s)", count)
         var ret = PluginCallResultData()
@@ -175,60 +272,30 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate, DCEFrameLis
             result["barcodeText"] = tr.barcodeText
             result["barcodeFormat"] = tr.barcodeFormatString
             result["barcodeBytesBase64"] = tr.barcodeBytes?.base64EncodedString()
-            result["x1"] = points[0].x
-            result["y1"] = points[0].y
-            result["x2"] = points[1].x
-            result["y2"] = points[1].y
-            result["x3"] = points[2].x
-            result["y3"] = points[2].y
-            result["x4"] = points[3].x
-            result["y4"] = points[3].y
+            for j in 0..<4 {
+                var x = points[j].x
+                var y = points[j].y
+                if frame.isCropped {
+                    x = frame.cropRegion.minX + x
+                    y = frame.cropRegion.minY + y
+                }
+                result["x"+String(j+1)] = x
+                result["y"+String(j+1)] = y
+            }
             array.add(result)
         }
         ret["results"]=array
-        ret["frameWidth"] = Int(rotatedImage.size.width)
-        ret["frameHeight"] = Int(rotatedImage.size.height)
+        ret["frameOrientation"] = frame.orientation
+        if UIApplication.shared.statusBarOrientation.isLandscape {
+            ret["deviceOrientation"] = "landscape"
+        }else {
+            ret["deviceOrientation"] = "portrait"
+        }
         notifyListeners("onFrameRead", data: ret)
     }
     
-    func rotated(degrees: CGFloat, image: UIImage) -> UIImage? {
-        var correctedDegrees:CGFloat = 0;
-        if degrees == 90 {
-            correctedDegrees = 270
-        } else if degrees == 180 {
-            correctedDegrees = 0
-        } else if degrees == 0 {
-            correctedDegrees = 180
-        }
-        
-        if correctedDegrees == 0 {
-            return image
-        }
-        
-        let radians = correctedDegrees * .pi / 180
-        let cgImage = image.cgImage!
-        let LARGEST_SIZE = CGFloat(max(image.size.width, image.size.height))
-        let context = CGContext.init(data: nil, width:Int(LARGEST_SIZE), height:Int(LARGEST_SIZE), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: cgImage.colorSpace!, bitmapInfo: cgImage.bitmapInfo.rawValue)!
-       
-        var drawRect = CGRect.zero
-        drawRect.size = image.size
-        let drawOrigin = CGPoint(x: (LARGEST_SIZE - image.size.width) * 0.5,y: (LARGEST_SIZE - image.size.height) * 0.5)
-        drawRect.origin = drawOrigin
-        var tf = CGAffineTransform.identity
-        tf = tf.translatedBy(x: LARGEST_SIZE * 0.5, y: LARGEST_SIZE * 0.5)
-        tf = tf.rotated(by: CGFloat(radians))
-        tf = tf.translatedBy(x: LARGEST_SIZE * -0.5, y: LARGEST_SIZE * -0.5)
-        context.concatenate(tf)
-        context.draw(cgImage, in: drawRect)
-        var rotatedImage = context.makeImage()!
-       
-        drawRect = drawRect.applying(tf)
-       
-        rotatedImage = rotatedImage.cropping(to: drawRect)!
-        let resultImage = UIImage(cgImage: rotatedImage)
-        return resultImage
-      }
-
+    
+    
     public func dlsLicenseVerificationCallback(_ isSuccess: Bool, error: Error?) {
         var msg:String? = nil
         if(error != nil)

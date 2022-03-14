@@ -259,21 +259,24 @@ public class DBRPlugin extends Plugin {
     @PluginMethod
     public void setScanRegion(PluginCall call){
         if (mCameraEnhancer!=null) {
-            com.dynamsoft.dce.RegionDefinition scanRegion = new com.dynamsoft.dce.RegionDefinition();
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    com.dynamsoft.dce.RegionDefinition scanRegion = new com.dynamsoft.dce.RegionDefinition();
+                    scanRegion.regionTop = call.getInt("top");
+                    scanRegion.regionBottom = call.getInt("bottom");
+                    scanRegion.regionLeft = call.getInt("left");
+                    scanRegion.regionRight = call.getInt("right");
+                    scanRegion.regionMeasuredByPercentage = call.getInt("measuredByPercentage");
 
-            scanRegion.regionTop = call.getInt("top");
-            scanRegion.regionBottom = call.getInt("bottom");
-            scanRegion.regionLeft = call.getInt("left");
-            scanRegion.regionRight = call.getInt("right");
-            scanRegion.regionMeasuredByPercentage = call.getInt("measuredByPercentage");
-
-            try {
-                mCameraEnhancer.setScanRegion(scanRegion);
-                call.resolve();
-            } catch (CameraEnhancerException e) {
-                e.printStackTrace();
-                call.reject(e.getMessage());
-            }
+                    try {
+                        mCameraEnhancer.setScanRegion(scanRegion);
+                        call.resolve();
+                    } catch (CameraEnhancerException e) {
+                        e.printStackTrace();
+                        call.reject(e.getMessage());
+                    }
+                }
+            });
         }else{
             call.reject("not initialized");
         }

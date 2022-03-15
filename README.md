@@ -40,12 +40,13 @@ npx cap sync
 * [`stopScan()`](#stopscan)
 * [`resumeScan()`](#resumescan)
 * [`pauseScan()`](#pausescan)
+* [`stopScan()`](#stopscan)
 * [`getAllCameras()`](#getallcameras)
 * [`selectCamera(...)`](#selectcamera)
 * [`getResolution()`](#getresolution)
 * [`setResolution(...)`](#setresolution)
 * [`setScanRegion(...)`](#setscanregion)
-* [`stopScan()`](#stopscan)
+* [`setZoom(...)`](#setzoom)
 * [`destroy()`](#destroy)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
@@ -134,6 +135,15 @@ pauseScan() => Promise<void>
 --------------------
 
 
+### stopScan()
+
+```typescript
+stopScan() => Promise<void>
+```
+
+--------------------
+
+
 ### getAllCameras()
 
 ```typescript
@@ -201,11 +211,17 @@ setScanRegion(options: ScanRegion) => Promise<{ success?: boolean; message?: str
 --------------------
 
 
-### stopScan()
+### setZoom(...)
 
 ```typescript
-stopScan() => Promise<void>
+setZoom(options: { factor: number; }) => Promise<{ success?: boolean; message?: string; }>
 ```
+
+| Param         | Type                             |
+| ------------- | -------------------------------- |
+| **`options`** | <code>{ factor: number; }</code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
 
 --------------------
 

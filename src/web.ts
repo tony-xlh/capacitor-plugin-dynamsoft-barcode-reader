@@ -179,4 +179,9 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return {success:true};
   }
 
+  async setZoom(options: { factor: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
+    await this.scanner.setZoom(options.factor);
+    return {success:true};
+  }
+
 }

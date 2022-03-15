@@ -20,6 +20,24 @@
       position: absolute;
       z-index: 999;
     }
+
+    #zoominButton {
+      bottom: 20px;
+      right: 0;
+      height: 20px;
+      position: absolute;
+      font-family:monospace;
+      z-index: 999;
+    }
+
+    #zoomoutButton {
+      bottom: 0;
+      right: 0;
+      height: 20px;
+      position: absolute;
+      font-family:monospace;
+      z-index: 999;
+    }
 </style>
 </head>
 <body>
@@ -35,6 +53,8 @@
     <select id="cameraSelect" style="position:absolute;left:0;top:0;z-index:999;"></select>
     <select id="resolutionSelect" style="position:absolute;left:0;top:20px;z-index:999;"></select>
     <button id="closeButton" type="button" onClick="stopScan()">Close</button>
+    <button id="zoominButton" type="button" onClick="zoomin()">+</button>
+    <button id="zoomoutButton" type="button" onClick="zoomout()">-</button>
   </div>
   
   <script>
@@ -272,6 +292,13 @@
       await DBR.stopScan();
     }
     
+    async function zoomin(){
+      await DBR.setZoom({factor:2.5});
+    }
+
+    async function zoomout(){
+      await DBR.setZoom({factor:1.0});
+    }
   </script>
 </body>
 </html>

@@ -282,6 +282,20 @@ public class DBRPlugin extends Plugin {
         }
     }
 
+    @PluginMethod
+    public void setZoom(PluginCall call){
+        if (call.hasOption("factor")) {
+            Float factor = call.getFloat("factor");
+            try {
+                mCameraEnhancer.setZoom((float) factor);
+            } catch (CameraEnhancerException e) {
+                e.printStackTrace();
+                call.reject(e.getMessage());
+            }
+        }
+        call.resolve();
+    }
+
     private void nullifyPreviousCall(){
         PluginCall savedCall = bridge.getSavedCall(currentCallbackID);
         if (savedCall != null) {

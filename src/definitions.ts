@@ -8,12 +8,13 @@ export interface DBRPlugin {
   stopScan(): Promise<void>;
   resumeScan(): Promise<void>;
   pauseScan(): Promise<void>;
+  stopScan(): Promise<void>;
   getAllCameras(): Promise<{cameras?: string[], message?: string}>;
   selectCamera(options: {cameraID: string}): Promise<{success?: boolean, message?: string}>;
   getResolution(): Promise<{resolution?: string, message?: string}>;
   setResolution(options: {resolution: number}): Promise<{success?: boolean, message?: string}>;
   setScanRegion(options: ScanRegion): Promise<{success?: boolean, message?: string}>;
-  stopScan(): Promise<void>;
+  setZoom(options: {factor: number}): Promise<{success?: boolean, message?: string}>;
   destroy(): Promise<void>;
   addListener(
     eventName: 'onFrameRead',

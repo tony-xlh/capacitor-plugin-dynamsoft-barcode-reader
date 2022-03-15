@@ -13,6 +13,12 @@
       stroke:green;
       stroke-width:1;
     }
+
+    .focus-polygon {
+      fill: transparent;
+      stroke:white;
+      stroke-width:1;
+    }
     
     #closeButton {
       top: 0;
@@ -153,12 +159,12 @@
     }
     
     function addSVGOverlay(width, height){
-      var overlayContainer = document.getElementsByClassName("overlay")[0];
+      let overlayContainer = document.getElementsByClassName("overlay")[0];
       if (overlayContainer.getElementsByTagName("svg").length>0) {
           return;
       }
-      //var video = document.getElementsByClassName("dbrScanner-video")[0];
-      var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+      //let video = document.getElementsByClassName("dbrScanner-video")[0];
+      let svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
       svg.style.top = 0;
       svg.style.left = 0;
       svg.style.position = "absolute";
@@ -172,21 +178,55 @@
     }
 
     function overlayClicked(e){
-      var overlayContainer = document.getElementsByClassName("overlay")[0];
-      var svg = overlayContainer.getElementsByTagName("svg")[0];
+      let overlayContainer = document.getElementsByClassName("overlay")[0];
+      let svg = overlayContainer.getElementsByTagName("svg")[0];
       let x = e.clientX/svg.clientWidth;
       let y = e.clientY/svg.clientHeight;
+      displayFocusHint(x,y);
       DBR.setFocus({x:x,y:y});
     }
 
-    function showOverlayOnSVG(scanResult){
-      var overlayContainer = document.getElementsByClassName("overlay")[0];
-        if (overlayContainer.getElementsByTagName("svg").length>0) {
-          var svg = overlayContainer.getElementsByTagName("svg")[0];
-          svg.innerHTML=""
-          var results = scanResult.results;
+    function displayFocusHint(x,y){
+      clearFocusHint();
+      let overlayContainer = document.getElementsByClassName("overlay")[0];
+      let svg = overlayContainer.getElementsByTagName("svg")[0];
+      let viewBox = svg.getAttribute("viewBox");
+      let frameWidth = viewBox.split(" ")[2];
+      let frameHeight = viewBox.split(" ")[3];
+      x = parseInt(x*frameWidth);
+      y = parseInt(y*frameHeight);
+      let polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+      let lr = {};
+      let padding = 50;
+      lr.x1 = x - padding;
+      lr.y1 = y - padding;
+      lr.x2 = x + padding;
+      lr.y2 = y - padding;
+      lr.x3 = x + padding;
+      lr.y3 = y + padding;
+      lr.x4 = x - padding;
+      lr.y4 = y + padding;
+      polygon.setAttribute("points",getPointsData(lr));
+      polygon.setAttribute("class","focus-polygon");
+      console.log(polygon);
+      svg.append(polygon);
+      setTimeout("clearFocusHint()", 2000)
+    }
 
-          var frameWidth, frameHeight;
+    function clearFocusHint(){
+      let overlayContainer = document.getElementsByClassName("overlay")[0];
+      let svg = overlayContainer.getElementsByTagName("svg")[0];
+      clearSVGElements(svg,"polygon");
+    }
+
+    function showOverlayOnSVG(scanResult){
+      let overlayContainer = document.getElementsByClassName("overlay")[0];
+        if (overlayContainer.getElementsByTagName("svg").length>0) {
+          let svg = overlayContainer.getElementsByTagName("svg")[0];
+          clearSVGElements(svg,"a");
+          let results = scanResult.results;
+
+          let frameWidth, frameHeight;
           frameWidth = currentResolution.split("x")[0]; //default is landscape
           frameHeight = currentResolution.split("x")[1];
 
@@ -201,17 +241,17 @@
           svg.setAttribute("viewBox","0 0 "+frameWidth+" "+frameHeight);
 
           for(let i = 0; i < results.length; i++){
-            var result = results[i];
+            let result = results[i];
             if (scanResult.frameOrientation != undefined) {
               handleRotation(result, scanResult.frameOrientation, frameWidth, frameHeight);
             }
-            var points = getPointsData(result);
-            var a = document.createElementNS("http://www.w3.org/2000/svg","a");
-            var polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+            let points = getPointsData(result);
+            let a = document.createElementNS("http://www.w3.org/2000/svg","a");
+            let polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
             polygon.setAttribute("points",points);
             polygon.setAttribute("class","barcode-polygon");
 
-            var text = document.createElementNS("http://www.w3.org/2000/svg","text");
+            let text = document.createElementNS("http://www.w3.org/2000/svg","text");
             text.setAttribute("x",result.x1);
             text.setAttribute("y",result.y1);
             text.setAttribute("fill","red");
@@ -221,6 +261,14 @@
             a.append(text);
             svg.append(a);
           }
+      }
+    }
+
+    function clearSVGElements(svg, tagName){
+      let elements = svg.getElementsByTagName(tagName);
+      for (let index = elements.length - 1; index >= 0; index--) {
+        const element = elements[index];
+        element.remove();
       }
     }
 
@@ -281,7 +329,7 @@
     }
 
     function getPointsData(lr){
-      var pointsData = lr.x1+","+lr.y1 + " ";
+      let pointsData = lr.x1+","+lr.y1 + " ";
       pointsData = pointsData+ lr.x2+","+lr.y2 + " ";
       pointsData = pointsData+ lr.x3+","+lr.y3 + " ";
       pointsData = pointsData+ lr.x4+","+lr.y4;
@@ -296,7 +344,7 @@
       document.getElementById("content").style.display = "";
       document.body.style.backgroundColor = "white";
       document.getElementsByClassName("controls")[0].style.display = "none";
-      var overlayContainer = document.getElementsByClassName("overlay")[0];
+      let overlayContainer = document.getElementsByClassName("overlay")[0];
       overlayContainer.innerHTML = "";
       await DBR.stopScan();
     }

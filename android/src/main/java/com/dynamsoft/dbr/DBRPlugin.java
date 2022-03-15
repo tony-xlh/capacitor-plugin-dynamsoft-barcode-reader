@@ -287,7 +287,22 @@ public class DBRPlugin extends Plugin {
         if (call.hasOption("factor")) {
             Float factor = call.getFloat("factor");
             try {
-                mCameraEnhancer.setZoom((float) factor);
+                mCameraEnhancer.setZoom(factor);
+            } catch (CameraEnhancerException e) {
+                e.printStackTrace();
+                call.reject(e.getMessage());
+            }
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void setFocus(PluginCall call){
+        if (call.hasOption("x") && call.hasOption("y")) {
+            Float x = call.getFloat("x");
+            Float y = call.getFloat("y");
+            try {
+                mCameraEnhancer.setFocus(x,y);
             } catch (CameraEnhancerException e) {
                 e.printStackTrace();
                 call.reject(e.getMessage());

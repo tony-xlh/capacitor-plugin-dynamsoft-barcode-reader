@@ -47,6 +47,7 @@ npx cap sync
 * [`setResolution(...)`](#setresolution)
 * [`setScanRegion(...)`](#setscanregion)
 * [`setZoom(...)`](#setzoom)
+* [`setFocus(...)`](#setfocus)
 * [`destroy()`](#destroy)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
@@ -220,6 +221,21 @@ setZoom(options: { factor: number; }) => Promise<{ success?: boolean; message?: 
 | Param         | Type                             |
 | ------------- | -------------------------------- |
 | **`options`** | <code>{ factor: number; }</code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
+### setFocus(...)
+
+```typescript
+setFocus(options: { x: number; y: number; }) => Promise<{ success?: boolean; message?: string; }>
+```
+
+| Param         | Type                                   |
+| ------------- | -------------------------------------- |
+| **`options`** | <code>{ x: number; y: number; }</code> |
 
 **Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
 

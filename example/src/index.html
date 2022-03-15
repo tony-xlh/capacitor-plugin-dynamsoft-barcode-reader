@@ -61,7 +61,7 @@
     let currentResolution = "1920x1080";
     document.getElementsByClassName("controls")[0].style.display = "none";
     window.onload = init;
-    
+
     async function init() {
       let result = await DBR.initialize();
       if (result) {
@@ -165,9 +165,18 @@
       svg.style.width = "100%";
       svg.style.height = "100%";
       svg.style.zIndex = 999;
-      svg.style.pointerEvents = "none";
+      //svg.style.pointerEvents = "none";
       svg.setAttribute("viewBox","0 0 "+width+" "+height);
+      svg.onclick = overlayClicked;
       overlayContainer.appendChild(svg);
+    }
+
+    function overlayClicked(e){
+      var overlayContainer = document.getElementsByClassName("overlay")[0];
+      var svg = overlayContainer.getElementsByTagName("svg")[0];
+      let x = e.clientX/svg.clientWidth;
+      let y = e.clientY/svg.clientHeight;
+      DBR.setFocus({x:x,y:y});
     }
 
     function showOverlayOnSVG(scanResult){

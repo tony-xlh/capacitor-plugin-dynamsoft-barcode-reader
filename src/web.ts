@@ -184,4 +184,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return {success:true};
   }
 
+  setFocus(_options: { x: number; y: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
+    throw new Error('Method not implemented.');
+  }
 }

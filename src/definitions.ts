@@ -15,6 +15,7 @@ export interface DBRPlugin {
   setResolution(options: {resolution: number}): Promise<{success?: boolean, message?: string}>;
   setScanRegion(options: ScanRegion): Promise<{success?: boolean, message?: string}>;
   setZoom(options: {factor: number}): Promise<{success?: boolean, message?: string}>;
+  setFocus(options: {x: number, y: number}): Promise<{success?: boolean, message?: string}>;
   destroy(): Promise<void>;
   addListener(
     eventName: 'onFrameRead',

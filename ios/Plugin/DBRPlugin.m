@@ -17,4 +17,5 @@ CAP_PLUGIN(DBRPlugin, "DBR",
            CAP_PLUGIN_METHOD(setResolution, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setScanRegion, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setZoom, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setFocus, CAPPluginReturnPromise);
 )

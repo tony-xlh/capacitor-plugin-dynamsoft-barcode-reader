@@ -236,6 +236,21 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
     }
     
+    @objc func setFocus(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            let x = call.getFloat("x", -1.0);
+            let y = call.getFloat("y", -1.0);
+            if x != -1.0 && y != -1.0 {
+                dce.setFocus(CGPoint(x: CGFloat(x), y: CGFloat(y)))
+            }
+            var ret = PluginCallResultData()
+            ret["success"] = true
+            call.resolve(ret)
+        }
+    }
+    
     func configurationDBR() {
         let dls = iDMDLSConnectionParameters()
         let call = bridge?.savedCall(withID: callBackId);

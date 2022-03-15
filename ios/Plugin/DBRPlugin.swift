@@ -224,6 +224,18 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
     }
     
+    @objc func setZoom(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            let factor:CGFloat = CGFloat(call.getFloat("factor") ?? 1.0)
+            dce.setZoom(factor)
+            var ret = PluginCallResultData()
+            ret["success"] = true
+            call.resolve(ret)
+        }
+    }
+    
     func configurationDBR() {
         let dls = iDMDLSConnectionParameters()
         let call = bridge?.savedCall(withID: callBackId);

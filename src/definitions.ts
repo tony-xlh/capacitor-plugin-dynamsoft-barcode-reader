@@ -22,7 +22,7 @@ export interface DBRPlugin {
     listenerFunc: onFrameReadListener,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   addListener(
-    eventName: 'onPlayed ',
+    eventName: 'onPlayed',
     listenerFunc: onPlayedListener,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
   removeAllListeners(): Promise<void>;

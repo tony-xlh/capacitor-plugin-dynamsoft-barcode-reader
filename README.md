@@ -270,12 +270,12 @@ addListener(eventName: 'onFrameRead', listenerFunc: onFrameReadListener) => Prom
 ### addListener(...)
 
 ```typescript
-addListener(eventName: 'onPlayed ', listenerFunc: onPlayedListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'onPlayed', listenerFunc: onPlayedListener) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 | Param              | Type                                                      |
 | ------------------ | --------------------------------------------------------- |
-| **`eventName`**    | <code>"onPlayed "</code>                                  |
+| **`eventName`**    | <code>"onPlayed"</code>                                   |
 | **`listenerFunc`** | <code>(result: { resolution: string; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>

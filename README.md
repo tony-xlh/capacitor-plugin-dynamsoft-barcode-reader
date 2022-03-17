@@ -42,6 +42,7 @@ npx cap sync
 * [`pauseScan()`](#pausescan)
 * [`stopScan()`](#stopscan)
 * [`getAllCameras()`](#getallcameras)
+* [`getSelectedCamera()`](#getselectedcamera)
 * [`selectCamera(...)`](#selectcamera)
 * [`getResolution()`](#getresolution)
 * [`setResolution(...)`](#setresolution)
@@ -152,6 +153,17 @@ getAllCameras() => Promise<{ cameras?: string[]; message?: string; }>
 ```
 
 **Returns:** <code>Promise&lt;{ cameras?: string[]; message?: string; }&gt;</code>
+
+--------------------
+
+
+### getSelectedCamera()
+
+```typescript
+getSelectedCamera() => Promise<{ selectedCamera?: string; message?: string; }>
+```
+
+**Returns:** <code>Promise&lt;{ selectedCamera?: string; message?: string; }&gt;</code>
 
 --------------------
 

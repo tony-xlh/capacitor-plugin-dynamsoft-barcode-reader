@@ -190,6 +190,17 @@ public class DBRPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void getSelectedCamera(PluginCall call){
+        if (mCameraEnhancer == null) {
+            call.reject("not initialized");
+        }else{
+            JSObject result = new JSObject();
+            result.put("selectedCamera",mCameraEnhancer.getSelectedCamera());
+            call.resolve(result);
+        }
+    }
+
+    @PluginMethod
     public void setResolution(PluginCall call){
         if (call.hasOption("resolution")){
             try {

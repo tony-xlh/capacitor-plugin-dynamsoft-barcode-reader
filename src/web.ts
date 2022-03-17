@@ -146,6 +146,11 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     });
     return {message:"not found"};
   }
+  
+  async getSelectedCamera(): Promise<{ selectedCamera?: string | undefined; message?: string | undefined; }> {
+    let cameraInfo = await this.scanner.getCurrentCamera();
+    return {"selectedCamera":cameraInfo?.label};
+  }
 
   async getResolution(): Promise<{ resolution?: string | undefined; message?: string | undefined; }> {
     let rsl = this.scanner.getResolution();

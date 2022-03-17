@@ -207,8 +207,7 @@ public class DBRPlugin extends Plugin {
                 Runnable setResolutionRunnable = new Runnable() {
                     public void run() {
                         try {
-                            String res = call.getString("resolution");
-                            mCameraEnhancer.setResolution(EnumResolution.fromValue(Integer.parseInt(res)));
+                            mCameraEnhancer.setResolution(EnumResolution.fromValue(call.getInt("resolution")));
                         } catch (CameraEnhancerException e) {
                             e.printStackTrace();
                         }

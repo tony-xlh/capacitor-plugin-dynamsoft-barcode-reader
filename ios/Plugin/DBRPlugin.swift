@@ -140,11 +140,11 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         if (dce == nil){
             call.reject("not initialized")
         }else{
-            let res = call.getString("resolution") ?? "-1"
+            let res = call.getInt("resolution") ?? -1
             NSLog("Resolution: %@", res)
             
-            if res != "-1" {
-                let resolution = EnumResolution.init(rawValue: Int(res)!)
+            if res != -1 {
+                let resolution = EnumResolution.init(rawValue: res)
                 dce.setResolution(resolution!)
                 triggerOnPlayed()
             }

@@ -190,6 +190,16 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
     }
     
+    @objc func getSelectedCamera(_ call: CAPPluginCall) {
+        if (dce == nil){
+            call.reject("not initialized")
+        }else{
+            var ret = PluginCallResultData()
+            ret["selectedCamera"] = dce.getSelectedCamera()
+            call.resolve(ret)
+        }
+    }
+    
     @objc func selectCamera(_ call: CAPPluginCall) {
         if (dce == nil){
             call.reject("not initialized")

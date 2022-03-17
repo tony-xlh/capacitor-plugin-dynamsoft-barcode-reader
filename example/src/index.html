@@ -107,7 +107,8 @@
         let resSelect = document.getElementById("resolutionSelect");
         let lbl = resSelect.selectedOptions[0].label;
         if (lbl.indexOf("ask") != -1) {
-          await DBR.setResolution({resolution:resSelect.selectedOptions[0].value});
+          let res = parseInt(resSelect.selectedOptions[0].value);
+          await DBR.setResolution({resolution:res});
         }
       });
     }

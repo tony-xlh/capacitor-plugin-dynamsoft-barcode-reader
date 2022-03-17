@@ -141,7 +141,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
             call.reject("not initialized")
         }else{
             let res = call.getInt("resolution") ?? -1
-            NSLog("Resolution: %@", res)
+            NSLog("Resolution: %d", res)
             
             if res != -1 {
                 let resolution = EnumResolution.init(rawValue: res)
@@ -171,7 +171,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
     @objc func triggerOnPlayed() {
         if (dce != nil) {
             var ret = PluginCallResultData()
-            let res = dce.getResolution();
+            let res = dce.getResolution()
             ret["resolution"] = res
             print("trigger on played")
             notifyListeners("onPlayed", data: ret)

@@ -6,6 +6,7 @@
 CAP_PLUGIN(DBRPlugin, "DBR",
            CAP_PLUGIN_METHOD(destroy, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(initialize, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(initRuntimeSettingsWithString, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(startScan, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(toggleTorch, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(stopScan, CAPPluginReturnPromise);

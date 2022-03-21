@@ -26,8 +26,10 @@ npx cap sync
 
 ## Demo
 
+* <https://github.com/xulihang/Ionic-React-QR-Code-Scanner>
 * <https://github.com/xulihang/capacitor-plugin-dynamsoft-barcode-reader/tree/main/example>
 * <https://github.com/xulihang/capacitor-qr-code-scanner>
+
 
 ## API
 

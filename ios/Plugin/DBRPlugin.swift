@@ -14,7 +14,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
     var dce:DynamsoftCameraEnhancer! = nil
     var dceView:DCECameraView! = nil
     var barcodeReader:DynamsoftBarcodeReader! = nil
-    var callBackId:String = "";
     var timer:Timer! = nil;
     
     @objc func destroy(_ call: CAPPluginCall) {
@@ -27,21 +26,16 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
             }
             dceView = nil
             dce = nil
-            nullifyPreviousCall()
             call.resolve()
-        }
-    }
-    
-    func nullifyPreviousCall(){
-        var savedCall = bridge?.savedCall(withID: callBackId);
-        if (savedCall != nil){
-            savedCall = nil
         }
     }
     
     @objc func initialize(_ call: CAPPluginCall) {
         if (barcodeReader == nil){
-            configurationDBR()
+            let license = call.getString("license") ?? ""
+            let organizationID = call.getString("organizationID") ?? "200001"
+            
+            configurationDBR(license: license, organizationID: organizationID)
             configurationDCE()
         }
         var ret = PluginCallResultData()
@@ -59,10 +53,6 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
     }
     
     @objc func startScan(_ call: CAPPluginCall) {
-        nullifyPreviousCall()
-        call.keepAlive = true;
-        bridge?.saveCall(call)
-        callBackId = call.callbackId;
         makeWebViewTransparent()
         if dce != nil {
             DispatchQueue.main.sync {
@@ -109,10 +99,10 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
     }
     
     @objc func stopScan(_ call: CAPPluginCall) {
+        restoreWebViewBackground()
         if (dce == nil){
             call.reject("not initialized")
         }else{
-            restoreWebViewBackground()
             dce.close()
             call.resolve()
         }
@@ -261,15 +251,13 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
     }
     
-    func configurationDBR() {
+    func configurationDBR(license: String, organizationID:String) {
         let dls = iDMDLSConnectionParameters()
-        let call = bridge?.savedCall(withID: callBackId);
-        let license = call?.getString("license") ?? ""
-        
+
         if (license != ""){
             barcodeReader = DynamsoftBarcodeReader(license: license)
         }else{
-            dls.organizationID = call?.getString("organizationID","200001");
+            dls.organizationID = organizationID;
             barcodeReader = DynamsoftBarcodeReader(licenseFromDLS: dls, verificationDelegate: self)
         }
     }

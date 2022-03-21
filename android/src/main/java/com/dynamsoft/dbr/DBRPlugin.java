@@ -3,7 +3,6 @@ package com.dynamsoft.dbr;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Size;
@@ -34,7 +33,6 @@ public class DBRPlugin extends Plugin {
     private CameraEnhancer mCameraEnhancer = null;
     private DCECameraView mCameraView;
     private BarcodeReader reader = null;
-    private String currentCallbackID;
     private Timer timer = null;
 
     private void startDecodingTimer(){
@@ -79,7 +77,6 @@ public class DBRPlugin extends Plugin {
                     mCameraView = null;
                     mCameraEnhancer = null;
                     reader = null;
-                    nullifyPreviousCall();
                 }
             });
         }
@@ -246,9 +243,6 @@ public class DBRPlugin extends Plugin {
 
     @PluginMethod
     public void startScan(PluginCall call) {
-        nullifyPreviousCall();
-        call.setKeepAlive(true);
-        currentCallbackID = call.getCallbackId();
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 try {
@@ -321,12 +315,6 @@ public class DBRPlugin extends Plugin {
         call.resolve();
     }
 
-    private void nullifyPreviousCall(){
-        PluginCall savedCall = bridge.getSavedCall(currentCallbackID);
-        if (savedCall != null) {
-            savedCall = null;
-        }
-    }
 
     private void initDBR(PluginCall call) throws BarcodeReaderException {
         reader = new BarcodeReader();

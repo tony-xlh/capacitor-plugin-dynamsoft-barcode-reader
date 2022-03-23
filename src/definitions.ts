@@ -34,7 +34,6 @@ export type onPlayedListener = (result:{resolution:string}) => void;
 
 export interface Options {
   license?: string;
-  organizationID?: string;
   dceLicense?:string;
 }
 

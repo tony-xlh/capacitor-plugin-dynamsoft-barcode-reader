@@ -50,10 +50,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async initialize(options?:Options): Promise<{success:boolean}> {
     if (this.scanner === undefined){
       if (options) {
-        if (options.organizationID){
-          DBR.BarcodeScanner.organizationID = options.organizationID;
-          console.log("set organization ID");
-        }else if (options.license){
+        if (options.license){
           DBR.BarcodeScanner.productKeys = options.license;
         }
       }

@@ -311,11 +311,10 @@ removeAllListeners() => Promise<void>
 
 #### Options
 
-| Prop                 | Type                |
-| -------------------- | ------------------- |
-| **`license`**        | <code>string</code> |
-| **`organizationID`** | <code>string</code> |
-| **`dceLicense`**     | <code>string</code> |
+| Prop             | Type                |
+| ---------------- | ------------------- |
+| **`license`**    | <code>string</code> |
+| **`dceLicense`** | <code>string</code> |
 
 
 #### ScanRegion

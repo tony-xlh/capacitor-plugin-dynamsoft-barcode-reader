@@ -8,7 +8,7 @@ import DynamsoftCameraEnhancer
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(DBRPlugin)
-public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
+public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVerificationListener  {
 
     private let implementation = DBR()
     var dce:DynamsoftCameraEnhancer! = nil
@@ -32,11 +32,11 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
     
     @objc func initialize(_ call: CAPPluginCall) {
         if (barcodeReader == nil){
-            let license = call.getString("license") ?? ""
-            let organizationID = call.getString("organizationID") ?? "200001"
+            let license = call.getString("license") ?? "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"
+            let dceLicense = call.getString("dceLicense") ?? "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"
             
-            configurationDBR(license: license, organizationID: organizationID)
-            configurationDCE()
+            configurationDBR(license: license)
+            configurationDCE(license: dceLicense)
         }
         var ret = PluginCallResultData()
         ret["success"] = true
@@ -46,8 +46,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
     @objc func initRuntimeSettingsWithString(_ call: CAPPluginCall) {
         let template = call.getString("template") ?? ""
         if (template != ""){
-            var error: NSError? = NSError()
-            barcodeReader.initRuntimeSettings(with: template, conflictMode: EnumConflictMode.overwrite, error: &error)
+            try? barcodeReader.initRuntimeSettingsWithString(template, conflictMode: EnumConflictMode.overwrite)
         }
         call.resolve()
     }
@@ -251,18 +250,22 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
     }
     
-    func configurationDBR(license: String, organizationID:String) {
-        let dls = iDMDLSConnectionParameters()
-
-        if (license != ""){
-            barcodeReader = DynamsoftBarcodeReader(license: license)
-        }else{
-            dls.organizationID = organizationID;
-            barcodeReader = DynamsoftBarcodeReader(licenseFromDLS: dls, verificationDelegate: self)
+    func configurationDBR(license: String) {
+        DynamsoftBarcodeReader.initLicense(license, verificationDelegate: self)
+        barcodeReader = DynamsoftBarcodeReader.init()
+    }
+    
+    public func dbrLicenseVerificationCallback(_ isSuccess: Bool, error: Error?)
+    {
+        let err = error as NSError?
+        if(err != nil){
+            print("Server DBR license verify failed")
         }
     }
     
-    func configurationDCE() {
+    func configurationDCE(license: String) {
+        DynamsoftCameraEnhancer.initLicense(license,verificationDelegate:self)
+
         // Initialize a camera view for previewing video.
         DispatchQueue.main.sync {
             print("configuring dce")
@@ -271,6 +274,13 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
             self.webView!.superview!.insertSubview(dceView, belowSubview: self.webView!)
             dce = DynamsoftCameraEnhancer.init(view: dceView)
             dce.setResolution(EnumResolution.EnumRESOLUTION_720P)
+        }
+    }
+    
+    public func dceLicenseVerificationCallback(_ isSuccess: Bool, error: Error?) {
+        let err = error as NSError?
+        if(err != nil){
+            print("Server DCE license verify failed")
         }
     }
 
@@ -285,7 +295,7 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
         
         let frame = dce.getFrameFromBuffer(false)
-        let results = try? barcodeReader.decodeBuffer(frame.imageData, withWidth: frame.width, height: frame.height, stride: frame.stride, format: EnumImagePixelFormat(rawValue: frame.pixelFormat) ?? EnumImagePixelFormat.NV21, templateName: "")
+        let results = try? barcodeReader.decodeBuffer(frame.imageData, width: frame.width, height: frame.height, stride: frame.stride, format: EnumImagePixelFormat(rawValue: frame.pixelFormat) ?? EnumImagePixelFormat.NV21)
         let count = results?.count ?? 0
         NSLog("Found %d barcode(s)", count)
         var ret = PluginCallResultData()
@@ -318,35 +328,4 @@ public class DBRPlugin: CAPPlugin, DMDLSLicenseVerificationDelegate  {
         }
         notifyListeners("onFrameRead", data: ret)
     }
-    
-    
-    
-    public func dlsLicenseVerificationCallback(_ isSuccess: Bool, error: Error?) {
-        var msg:String? = nil
-        if(error != nil)
-        {
-            let err = error as NSError?
-            if err?.code == -1009 {
-                msg = "Unable to connect to the public Internet to acquire a license. Please connect your device to the Internet or contact support@dynamsoft.com to acquire an offline license."
-                showResult("No Internet", msg!, "Try Again") {}
-            }else{
-                msg = err!.userInfo[NSUnderlyingErrorKey] as? String
-                if(msg == nil)
-                {
-                    msg = err?.localizedDescription
-                }
-                showResult("Server license verify failed", msg!, "OK") {
-                }
-            }
-        }
-    }
-    
-    private func showResult(_ title: String, _ msg: String, _ acTitle: String, completion: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: acTitle, style: .default, handler: { _ in completion() }))
-            self.bridge?.viewController?.present(alert, animated: true, completion: nil)
-        }
-    }
-    
 }

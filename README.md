@@ -340,6 +340,7 @@ measuredByPercentage: 0 in pixel, 1 in percent
 
 ## Supported Barcode Symbologies
 
+* Code 11
 * Code 39
 * Code 93
 * Code 128
@@ -362,3 +363,4 @@ measuredByPercentage: 0 in pixel, 1 in percent
 * GS1 Composite
 * Postal Code
 * Dot Code
+* Pharmacode

@@ -45,7 +45,7 @@ public class DBRPlugin extends Plugin {
                         DCEFrame frame = mCameraEnhancer.getFrameFromBuffer(false);
                         if (frame != null){
                             try {
-                                TextResult[] textResults = reader.decodeBuffer(frame.getImageData(),frame.getWidth(),frame.getHeight(),frame.getStrides()[0],frame.getPixelFormat(),"");
+                                TextResult[] textResults = reader.decodeBuffer(frame.getImageData(),frame.getWidth(),frame.getHeight(),frame.getStrides()[0],frame.getPixelFormat());
                                 JSObject ret = wrapResults(textResults, frame);
                                 ret.put("frameOrientation",frame.getOrientation());
                                 int deviceOrientation = getContext().getResources().getConfiguration().orientation;
@@ -317,21 +317,15 @@ public class DBRPlugin extends Plugin {
 
 
     private void initDBR(PluginCall call) throws BarcodeReaderException {
-        reader = new BarcodeReader();
-        DMDLSConnectionParameters dbrParameters = new DMDLSConnectionParameters();
-        if (call.hasOption("license")){
-            reader.initLicense(call.getString("license"));
-        }else{
-            dbrParameters.organizationID = call.getString("organizationID","200001");
-            reader.initLicenseFromDLS(dbrParameters, new DBRDLSLicenseVerificationListener() {
-                @Override
-                public void DLSLicenseVerificationCallback(boolean isSuccessful, Exception e) {
-                    if (!isSuccessful) {
-                        e.printStackTrace();
-                    }
+        BarcodeReader.initLicense(call.getString("license","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"), new DBRLicenseVerificationListener() {
+            @Override
+            public void DBRLicenseVerificationCallback(boolean isSuccessful, Exception e) {
+                if (!isSuccessful) {
+                    e.printStackTrace();
                 }
-            });
-        }
+            }
+        });
+        reader = new BarcodeReader();
     }
 
     private void initDCE(String dceLicense){

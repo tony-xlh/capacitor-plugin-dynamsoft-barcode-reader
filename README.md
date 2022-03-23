@@ -364,3 +364,9 @@ measuredByPercentage: 0 in pixel, 1 in percent
 * Postal Code
 * Dot Code
 * Pharmacode
+
+## Version
+
+For versions >= 1.3.0, Dynamsoft Barcode Reader 9 is used.
+
+For versions < 1.3.0, Dynamsoft Barcode Reader 8 is used.

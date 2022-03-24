@@ -34,6 +34,7 @@ public class DBRPlugin extends Plugin {
     private DCECameraView mCameraView;
     private BarcodeReader reader = null;
     private Timer timer = null;
+    private EnumCameraState previousCameraStatus = null;
 
     private void startDecodingTimer(){
         timer = new Timer();
@@ -438,6 +439,7 @@ public class DBRPlugin extends Plugin {
     protected void handleOnPause() {
         if (mCameraEnhancer!=null){
             try {
+                previousCameraStatus = mCameraEnhancer.getCameraState();
                 mCameraEnhancer.close();
             } catch (CameraEnhancerException e) {
                 e.printStackTrace();
@@ -450,7 +452,9 @@ public class DBRPlugin extends Plugin {
     protected void handleOnResume() {
         if (mCameraEnhancer!=null){
             try {
-                mCameraEnhancer.open();
+                if (previousCameraStatus == EnumCameraState.OPENED) {
+                    mCameraEnhancer.open();
+                }
             } catch (CameraEnhancerException e) {
                 e.printStackTrace();
             }

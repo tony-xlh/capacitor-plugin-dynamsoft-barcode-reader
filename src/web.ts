@@ -28,9 +28,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async stopScan(){
     try{
-      if (this.interval) {
-        clearInterval(this.interval);
-      }
+      this.stopDecoding();
       this.enhancer.close(true);
     } catch (e){
       throw e;
@@ -39,9 +37,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async pauseScan(){
     try{
-      if (this.interval) {
-        clearInterval(this.interval);
-      }
+      this.stopDecoding();
       this.enhancer.pause();
     } catch (e){
       throw e;
@@ -51,10 +47,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async resumeScan(){
     try{
       await this.enhancer.resume();
-      if (this.interval) {
-        clearInterval(this.interval);
-      }
-      this.interval = setInterval(this.captureAndDecode, 100);
+      this.startDecoding();
     } catch (e){
       throw e;
     }
@@ -156,10 +149,22 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async startScan(): Promise<void> {
     await this.enhancer.open(true);
+    this.startDecoding();
+  }
+
+  startDecoding() {
     if (this.interval) {
       clearInterval(this.interval);
     }
+    this.decoding = false;
     this.interval = setInterval(this.captureAndDecode.bind(this),100);
+  }
+
+  stopDecoding() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+    this.decoding = false;
   }
 
   private arrayBufferToBase64( buffer: number[] ):string {

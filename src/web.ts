@@ -9,27 +9,30 @@ BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javas
 CameraEnhancer.defaultUIElementURL = "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@2.3.1/dist/dce.ui.html";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
-  private reader!: BarcodeReader;
-  private enhancer!: CameraEnhancer;
+  private reader: BarcodeReader | null = null;
+  private enhancer: CameraEnhancer | null = null;
   private interval!: any;
   private decoding: boolean = false;
 
   async toggleTorch(options:{ on:boolean}){
-    try{
-      if (options["on"]){
-        this.enhancer.turnOnTorch();
-      }else{
-        this.enhancer.turnOffTorch();
+    if (this.enhancer) {
+      try{
+        if (options["on"]){
+          this.enhancer?.turnOnTorch();
+        }else{
+          this.enhancer?.turnOffTorch();
+        }
+      } catch (e){
+        throw new Error("Torch unsupported");
       }
-    } catch (e){
-      throw new Error("Torch unsupported");
     }
+   
   }
 
   async stopScan(){
     try{
       this.stopDecoding();
-      this.enhancer.close(true);
+      this.enhancer?.close(true);
     } catch (e){
       throw e;
     }
@@ -38,7 +41,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async pauseScan(){
     try{
       this.stopDecoding();
-      this.enhancer.pause();
+      this.enhancer?.pause();
     } catch (e){
       throw e;
     }
@@ -46,7 +49,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async resumeScan(){
     try{
-      await this.enhancer.resume();
+      await this.enhancer?.resume();
       this.startDecoding();
     } catch (e){
       throw e;
@@ -54,12 +57,15 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async destroy():Promise<void>{
-    this.enhancer.getUIElement().remove();
-    return
+    this.stopDecoding();
+    this.enhancer?.dispose(true);
+    this.reader?.destroyContext();
+    this.enhancer = null;
+    this.reader = null;
   }
 
   async initialize(options?:Options): Promise<{success:boolean}> {
-    if (this.reader === undefined){
+    if (this.reader === null){
       if (options) {
         if (options.license){
           BarcodeReader.license = options.license;
@@ -72,6 +78,8 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       this.enhancer.on("played", (playCallBackInfo:PlayCallbackInfo) => {
         this.notifyListeners("onPlayed", {resolution:playCallBackInfo.width+"x"+playCallBackInfo.height});
       });
+      await this.enhancer.setUIElement("https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@2.3.1/dist/dce.ui.html");
+
       this.enhancer.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
       this.enhancer.getUIElement().getElementsByClassName("dce-sel-camera")[0].remove();
       this.enhancer.getUIElement().getElementsByClassName("dce-sel-resolution")[0].remove();
@@ -83,7 +91,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async captureAndDecode() {
-    if (this.enhancer == undefined) {
+    if (this.enhancer == null || this.reader == null) {
       return
     }
     if (this.enhancer.isOpen() == false) {
@@ -129,7 +137,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async setScanRegion(region:ScanRegion) {
-    this.enhancer.setScanRegion({
+    this.enhancer?.setScanRegion({
       regionLeft:region.left,
       regionTop:region.top,
       regionRight:region.right,
@@ -141,13 +149,13 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async initRuntimeSettingsWithString(options: { template: string; }): Promise<void> {
     if (options.template){
-      await this.reader.initRuntimeSettingsWithString(options.template);
+      await this.reader?.initRuntimeSettingsWithString(options.template);
       console.log("Using template");
     }
   }
 
   async startScan(): Promise<void> {
-    await this.enhancer.open(true);
+    await this.enhancer?.open(true);
     this.startDecoding();
   }
 
@@ -177,65 +185,89 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async getAllCameras(): Promise<{ cameras?: string[] | undefined; message?: string | undefined; }> {
-    let cameras = await this.enhancer.getAllCameras();
-    let labels:string[] = [];
-    cameras.forEach(camera => {
-      labels.push(camera.label);
-    });
-    return {cameras:labels};
+    if (this.enhancer) {
+      let cameras = await this.enhancer.getAllCameras();
+      let labels:string[] = [];
+      cameras.forEach(camera => {
+        labels.push(camera.label);
+      });
+      return {cameras:labels};
+    }
+    return {message:"not initialized"};
   }
 
   async selectCamera(options: { cameraID: string; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
-    let cameras = await this.enhancer.getAllCameras()
-    cameras.forEach(async camera => {
-      if (camera.label == options.cameraID) {
-        await this.enhancer.selectCamera(camera);
-        return {success:true};
-      }
-    });
-    return {message:"not found"};
+    if (this.enhancer) {
+      let cameras = await this.enhancer.getAllCameras()
+      cameras.forEach(async camera => {
+        if (camera.label == options.cameraID) {
+          await this.enhancer?.selectCamera(camera);
+          return {success:true};
+        }
+      });
+      return {message:"not found"};
+    }else{
+      return {message:"not initialized"};
+    }
   }
   
   async getSelectedCamera(): Promise<{ selectedCamera?: string | undefined; message?: string | undefined; }> {
-    let cameraInfo = this.enhancer.getSelectedCamera();
-    return {"selectedCamera":cameraInfo?.label};
+    if (this.enhancer) {
+      let cameraInfo = this.enhancer.getSelectedCamera();
+      return {"selectedCamera":cameraInfo.label};
+    }else {
+      return {message:"not initialized"};
+    }
   }
 
   async getResolution(): Promise<{ resolution?: string | undefined; message?: string | undefined; }> {
-    let rsl = this.enhancer.getResolution();
-    let res:string = rsl[0] + "x" + rsl[1];
-    return {resolution:res};
+    if (this.enhancer) {
+      let rsl = this.enhancer.getResolution();
+      let res:string = rsl[0] + "x" + rsl[1];
+      return {resolution:res};
+    }else{
+      return {message:"not initialized"};
+    }
   }
 
   async setResolution(options: { resolution: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
-    let res = options.resolution;
-    let width = 1280;
-    let height = 720;
-
-    if (res == EnumResolution.RESOLUTION_480P){
-       width = 640;
-       height = 480;
-    } else if (res == EnumResolution.RESOLUTION_720P){
-      width = 1280;
-      height = 720;
-    } else if (res == EnumResolution.RESOLUTION_1080P){
-      width = 1920;
-      height = 1080;
-    } else if (res == EnumResolution.RESOLUTION_2K){
-      width = 2560;
-      height = 1440;
-    } else if (res == EnumResolution.RESOLUTION_4K){
-      width = 3840;
-      height = 2160;
+    if (this.enhancer) {
+      let res = options.resolution;
+      let width = 1280;
+      let height = 720;
+  
+      if (res == EnumResolution.RESOLUTION_480P){
+         width = 640;
+         height = 480;
+      } else if (res == EnumResolution.RESOLUTION_720P){
+        width = 1280;
+        height = 720;
+      } else if (res == EnumResolution.RESOLUTION_1080P){
+        width = 1920;
+        height = 1080;
+      } else if (res == EnumResolution.RESOLUTION_2K){
+        width = 2560;
+        height = 1440;
+      } else if (res == EnumResolution.RESOLUTION_4K){
+        width = 3840;
+        height = 2160;
+      }
+  
+      await this.enhancer.setResolution(width,height);
+      return {success:true};
+    } else{
+      return {message:"not initialized"};
     }
-
-    await this.enhancer.setResolution(width,height);
-    return {success:true};
   }
 
   async setZoom(options: { factor: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
-    await this.enhancer.setZoom(options.factor);
-    return {success:true};
+    if (this.enhancer) {
+      await this.enhancer.setZoom(options.factor);
+      return {success:true};
+    }else{
+      return {message:"not initialized"};
+    }
+    
   }
 
   setFocus(_options: { x: number; y: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {

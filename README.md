@@ -367,6 +367,8 @@ measuredByPercentage: 0 in pixel, 1 in percent
 
 ## Version
 
-For versions >= 1.3.0, Dynamsoft Barcode Reader 9 is used.
+For versions >= 1.3.1, Dynamsoft Barcode Reader 9 is used.
+
+For version 1.3.0, Dynamsoft Barcode Reader Mobile 9 and Dynamsoft Barcode Reader JavaScript 8.8.7 are used.
 
 For versions < 1.3.0, Dynamsoft Barcode Reader 8 is used.

@@ -93,7 +93,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       return;
     }
     let frame = this.enhancer.getFrame();
-    console.log(frame);
     if (frame) {
       this.decoding = true;
       let results:DBRTextResult[] = await this.reader.decode(frame);

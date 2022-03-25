@@ -74,7 +74,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
       this.enhancer = await CameraEnhancer.createInstance();
       this.reader = await BarcodeScanner.createInstance();
-      this.reader.updateRuntimeSettings('balance');
+      await this.reader.updateRuntimeSettings('balance');
       this.enhancer.on("played", (playCallBackInfo:PlayCallbackInfo) => {
         this.notifyListeners("onPlayed", {resolution:playCallBackInfo.width+"x"+playCallBackInfo.height});
       });

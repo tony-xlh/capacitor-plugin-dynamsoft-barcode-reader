@@ -199,12 +199,13 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async selectCamera(options: { cameraID: string; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
     if (this.enhancer) {
       let cameras = await this.enhancer.getAllCameras()
-      cameras.forEach(async camera => {
-        if (camera.label == options.cameraID) {
+      for (let index = 0; index < cameras.length; index++) {
+        const camera = cameras[index];
+        if (camera.label === options.cameraID) {
           await this.enhancer?.selectCamera(camera);
           return {success:true};
         }
-      });
+      }
       return {message:"not found"};
     }else{
       return {message:"not initialized"};

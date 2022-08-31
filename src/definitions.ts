@@ -20,7 +20,6 @@ export interface DBRPlugin {
   destroy(): Promise<void>;
   setEngineResourcePath(path:string): Promise<void>;
   setDefaultUIElementURL(url:string): Promise<void>;
-  startScan(): Promise<void>;
   addListener(
     eventName: 'onFrameRead',
     listenerFunc: onFrameReadListener,

@@ -52,6 +52,8 @@ npx cap sync
 * [`setZoom(...)`](#setzoom)
 * [`setFocus(...)`](#setfocus)
 * [`destroy()`](#destroy)
+* [`setEngineResourcePath(...)`](#setengineresourcepath)
+* [`setDefaultUIElementURL(...)`](#setdefaultuielementurl)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
 * [`removeAllListeners()`](#removealllisteners)
@@ -261,6 +263,32 @@ setFocus(options: { x: number; y: number; }) => Promise<{ success?: boolean; mes
 ```typescript
 destroy() => Promise<void>
 ```
+
+--------------------
+
+
+### setEngineResourcePath(...)
+
+```typescript
+setEngineResourcePath(path: string) => Promise<void>
+```
+
+| Param      | Type                |
+| ---------- | ------------------- |
+| **`path`** | <code>string</code> |
+
+--------------------
+
+
+### setDefaultUIElementURL(...)
+
+```typescript
+setDefaultUIElementURL(url: string) => Promise<void>
+```
+
+| Param     | Type                |
+| --------- | ------------------- |
+| **`url`** | <code>string</code> |
 
 --------------------
 

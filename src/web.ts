@@ -5,8 +5,8 @@ import { BarcodeReader, BarcodeScanner, TextResult as DBRTextResult } from "dyna
 import { CameraEnhancer } from 'dynamsoft-camera-enhancer';
 import { PlayCallbackInfo } from 'dynamsoft-camera-enhancer/dist/types/interface/playcallbackinfo';
 
-BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.0.0/dist/";
-CameraEnhancer.defaultUIElementURL = "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@2.3.1/dist/dce.ui.html";
+BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.2.13/dist/";
+CameraEnhancer.defaultUIElementURL = "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.0.1/dist/dce.ui.html";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private reader: BarcodeReader | null = null;
@@ -78,7 +78,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       this.enhancer.on("played", (playCallBackInfo:PlayCallbackInfo) => {
         this.notifyListeners("onPlayed", {resolution:playCallBackInfo.width+"x"+playCallBackInfo.height});
       });
-      await this.enhancer.setUIElement("https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@2.3.1/dist/dce.ui.html");
+      await this.enhancer.setUIElement(CameraEnhancer.defaultUIElementURL);
 
       this.enhancer.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
       this.enhancer.getUIElement().getElementsByClassName("dce-sel-camera")[0].remove();

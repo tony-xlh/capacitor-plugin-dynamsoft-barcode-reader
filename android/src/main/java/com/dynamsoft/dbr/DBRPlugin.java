@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Size;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -247,6 +248,7 @@ public class DBRPlugin extends Plugin {
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 try {
+                    mCameraView.setVisibility(View.VISIBLE);
                     mCameraEnhancer.open();
                     makeWebViewTransparent();
                     triggerOnPlayed();
@@ -404,6 +406,7 @@ public class DBRPlugin extends Plugin {
     public void stopScan(PluginCall call) {
         try{
             restoreWebViewBackground();
+            mCameraView.setVisibility(View.INVISIBLE);
             mCameraEnhancer.close();
             if (timer != null) {
                 timer.cancel();

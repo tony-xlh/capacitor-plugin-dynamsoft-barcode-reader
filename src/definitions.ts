@@ -18,6 +18,9 @@ export interface DBRPlugin {
   setZoom(options: {factor: number}): Promise<{success?: boolean, message?: string}>;
   setFocus(options: {x: number, y: number}): Promise<{success?: boolean, message?: string}>;
   destroy(): Promise<void>;
+  setEngineResourcePath(path:string): Promise<void>;
+  setDefaultUIElementURL(url:string): Promise<void>;
+  startScan(): Promise<void>;
   addListener(
     eventName: 'onFrameRead',
     listenerFunc: onFrameReadListener,

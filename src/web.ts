@@ -274,4 +274,12 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   setFocus(_options: { x: number; y: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
     throw new Error('Method not implemented.');
   }
+
+  async setEngineResourcePath(path:string): Promise<void> {
+    BarcodeReader.engineResourcePath = path;
+  }
+
+  async setDefaultUIElementURL(url:string): Promise<void> {
+    CameraEnhancer.defaultUIElementURL = url;
+  }
 }

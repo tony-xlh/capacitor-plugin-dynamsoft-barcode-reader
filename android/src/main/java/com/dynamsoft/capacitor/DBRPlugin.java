@@ -1,4 +1,4 @@
-package com.dynamsoft.dbr;
+package com.dynamsoft.capacitor;
 
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -10,6 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.dynamsoft.dbr.BarcodeReader;
+import com.dynamsoft.dbr.BarcodeReaderException;
+import com.dynamsoft.dbr.DBRLicenseVerificationListener;
+import com.dynamsoft.dbr.EnumConflictMode;
+import com.dynamsoft.dbr.TextResult;
 import com.dynamsoft.dce.CameraEnhancer;
 import com.dynamsoft.dce.CameraEnhancerException;
 import com.dynamsoft.dce.DCECameraView;
@@ -120,7 +125,7 @@ public class DBRPlugin extends Plugin {
     public void initRuntimeSettingsWithString(PluginCall call){
         if (call.hasOption("template")){
             try {
-                reader.initRuntimeSettingsWithString(call.getString("template"),EnumConflictMode.CM_OVERWRITE);
+                reader.initRuntimeSettingsWithString(call.getString("template"), EnumConflictMode.CM_OVERWRITE);
             } catch (BarcodeReaderException e) {
                 e.printStackTrace();
                 call.reject(e.getMessage());

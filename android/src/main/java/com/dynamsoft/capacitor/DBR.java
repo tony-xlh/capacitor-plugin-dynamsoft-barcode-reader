@@ -1,4 +1,4 @@
-package com.dynamsoft.dbr;
+package com.dynamsoft.capacitor;
 
 import android.util.Log;
 

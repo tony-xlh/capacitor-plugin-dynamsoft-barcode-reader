@@ -196,6 +196,7 @@
       svg.style.zIndex = 999;
       //svg.style.pointerEvents = "none";
       svg.setAttribute("viewBox","0 0 "+width+" "+height);
+      svg.setAttribute("preserveAspectRatio","xMidYMid slice");
       svg.onclick = overlayClicked;
       overlayContainer.appendChild(svg);
     }

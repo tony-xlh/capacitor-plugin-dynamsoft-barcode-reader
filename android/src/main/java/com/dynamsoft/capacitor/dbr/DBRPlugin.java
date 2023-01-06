@@ -1,4 +1,4 @@
-package com.dynamsoft.capacitor;
+package com.dynamsoft.capacitor.dbr;
 
 import android.Manifest;
 import android.content.res.Configuration;

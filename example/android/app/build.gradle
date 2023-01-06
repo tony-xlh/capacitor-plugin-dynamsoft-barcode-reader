@@ -3,6 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         release {
+        storeFile file('C:\\Users\\admin\\keystore.jks')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias 'key0'
         }
     }
     compileSdkVersion rootProject.ext.compileSdkVersion

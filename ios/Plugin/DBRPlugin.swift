@@ -328,4 +328,8 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
         }
         notifyListeners("onFrameRead", data: ret)
     }
+
+    @objc func requestCameraPermission(_ call: CAPPluginCall) {
+        call.resolve()
+    }
 }

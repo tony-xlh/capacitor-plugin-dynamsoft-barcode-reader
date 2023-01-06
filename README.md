@@ -43,6 +43,7 @@ npx cap sync
 * [`resumeScan()`](#resumescan)
 * [`pauseScan()`](#pausescan)
 * [`stopScan()`](#stopscan)
+* [`requestCameraPermission()`](#requestcamerapermission)
 * [`getAllCameras()`](#getallcameras)
 * [`getSelectedCamera()`](#getselectedcamera)
 * [`selectCamera(...)`](#selectcamera)
@@ -145,6 +146,15 @@ pauseScan() => Promise<void>
 
 ```typescript
 stopScan() => Promise<void>
+```
+
+--------------------
+
+
+### requestCameraPermission()
+
+```typescript
+requestCameraPermission() => Promise<void>
 ```
 
 --------------------

@@ -1,5 +1,6 @@
 package com.dynamsoft.capacitor;
 
+import android.Manifest;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -24,17 +25,26 @@ import com.dynamsoft.dce.EnumCameraState;
 import com.dynamsoft.dce.EnumResolution;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-@CapacitorPlugin(name = "DBR")
-public class DBRPlugin extends Plugin {
 
+@CapacitorPlugin(
+    name = "DBR",
+    permissions = {
+            @Permission(strings = { Manifest.permission.CAMERA }, alias = DBRPlugin.CAMERA),
+    }
+)
+public class DBRPlugin extends Plugin {
+    static final String CAMERA = "camera";
     private DBR implementation = new DBR();
     private CameraEnhancer mCameraEnhancer = null;
     private DCECameraView mCameraView;
@@ -468,5 +478,27 @@ public class DBRPlugin extends Plugin {
             }
         }
         super.handleOnResume();
+    }
+
+    @PluginMethod
+    public void requestCameraPermission(PluginCall call) {
+        boolean hasCameraPerms = getPermissionState(CAMERA) == PermissionState.GRANTED;
+        if (hasCameraPerms == false) {
+            Log.d("DBR","no camera permission. request permission.");
+            String[] aliases = new String[] { CAMERA };
+            requestPermissionForAliases(aliases, call, "cameraPermissionsCallback");
+        }else{
+            call.resolve();
+        }
+    }
+
+    @PermissionCallback
+    private void cameraPermissionsCallback(PluginCall call) {
+        boolean hasCameraPerms = getPermissionState(CAMERA) == PermissionState.GRANTED;
+        if (hasCameraPerms) {
+            call.resolve();
+        }else {
+            call.reject("Permission not granted.");
+        }
     }
 }

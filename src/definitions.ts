@@ -9,6 +9,7 @@ export interface DBRPlugin {
   resumeScan(): Promise<void>;
   pauseScan(): Promise<void>;
   stopScan(): Promise<void>;
+  requestCameraPermission(): Promise<void>;
   getAllCameras(): Promise<{cameras?: string[], message?: string}>;
   getSelectedCamera(): Promise<{selectedCamera?: string, message?: string}>;
   selectCamera(options: {cameraID: string}): Promise<{success?: boolean, message?: string}>;

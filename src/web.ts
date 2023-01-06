@@ -282,4 +282,14 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async setDefaultUIElementURL(url:string): Promise<void> {
     CameraEnhancer.defaultUIElementURL = url;
   }
+
+  async requestCameraPermission(): Promise<void> {
+    const constraints = {video: true, audio: false};
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const tracks = stream.getTracks();
+    for (let i=0;i<tracks.length;i++) {
+      const track = tracks[i];
+      track.stop();  // stop the opened camera
+    }
+  }
 }

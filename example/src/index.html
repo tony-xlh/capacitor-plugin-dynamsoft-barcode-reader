@@ -37,34 +37,43 @@
       font-family:monospace;
       z-index: 999;
     }
+
+    #toggleTorchButton {
+      bottom: 0;
+      left: 0;
+      height: 20px;
+      position: absolute;
+      font-family:monospace;
+      z-index: 999;
+    }
     
-	#cameraSelect {
-	  top:0;
-	  top:env(safe-area-inset-top);
-	  left:0;
-	  height: 20px;
-	  z-index: 999;
-	  position:absolute;
-	}
+    #cameraSelect {
+      top:0;
+      top:env(safe-area-inset-top);
+      left:0;
+      height: 20px;
+      z-index: 999;
+      position:absolute;
+    }
 
-	#resolutionSelect {
-	  top:20px;
-	  top:calc(env(safe-area-inset-top) + 20px);
-	  left:0;
-	  height: 20px;
-	  z-index: 999;
-	  position:absolute;
-	}
+    #resolutionSelect {
+      top:20px;
+      top:calc(env(safe-area-inset-top) + 20px);
+      left:0;
+      height: 20px;
+      z-index: 999;
+      position:absolute;
+    }
 
 
-	#closeButton {
-	  top:0;
-	  top:env(safe-area-inset-top);
-	  right:0;
-	  height: 20px;
-	  z-index: 999;
-	  position:absolute;
-	}
+    #closeButton {
+      top:0;
+      top:env(safe-area-inset-top);
+      right:0;
+      height: 20px;
+      z-index: 999;
+      position:absolute;
+    }
 </style>
 </head>
 <body>
@@ -82,10 +91,12 @@
     <button id="closeButton" type="button" onClick="stopScan()">Close</button>
     <button id="zoominButton" type="button" onClick="zoomin()">+</button>
     <button id="zoomoutButton" type="button" onClick="zoomout()">-</button>
+    <button id="toggleTorchButton" type="button" onClick="toggleTorch()">Toggle Torch</button>
   </div>
   
   <script>
     let currentResolution = "1920x1080";
+    let torchOn = false;
     document.getElementsByClassName("controls")[0].style.display = "none";
     window.onload = init;
 
@@ -379,6 +390,15 @@
 
     async function zoomout(){
       await DBR.setZoom({factor:1.0});
+    }
+
+    async function toggleTorch(){
+      try {
+        torchOn = !torchOn;
+        await DBR.toggleTorch({on:torchOn});  
+      } catch (error) {
+        alert("Torch Unsupported.");
+      }
     }
   </script>
 </body>

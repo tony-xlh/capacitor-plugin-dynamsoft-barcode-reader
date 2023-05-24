@@ -18,9 +18,9 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     if (this.enhancer) {
       try{
         if (options["on"]){
-          this.enhancer?.turnOnTorch();
+          await this.enhancer?.turnOnTorch();
         }else{
-          this.enhancer?.turnOffTorch();
+          await this.enhancer?.turnOffTorch();
         }
       } catch (e){
         throw new Error("Torch unsupported");

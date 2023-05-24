@@ -88,10 +88,12 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
         if (dce == nil){
             call.reject("not initialized")
         }else{
-            if call.getBool("on", true){
-               dce.turnOnTorch()
-            } else{
-               dce.turnOffTorch()
+            DispatchQueue.main.async {
+                if call.getBool("on", true){
+                    self.dce.turnOnTorch()
+                } else{
+                    self.dce.turnOffTorch()
+                }
             }
             call.resolve()
         }
@@ -209,14 +211,16 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
         if (dce == nil){
             call.reject("not initialized")
         }else{
-            let scanRegion = iRegionDefinition()
-            scanRegion.regionTop = call.getInt("top")!
-            scanRegion.regionBottom = call.getInt("bottom")!
-            scanRegion.regionLeft = call.getInt("left")!
-            scanRegion.regionRight = call.getInt("right")!
-            scanRegion.regionMeasuredByPercentage = call.getInt("measuredByPercentage")!
-            var error: NSError? = NSError()
-            dce.setScanRegion(scanRegion, error: &error)
+            DispatchQueue.main.async {
+                let scanRegion = iRegionDefinition()
+                scanRegion.regionTop = call.getInt("top")!
+                scanRegion.regionBottom = call.getInt("bottom")!
+                scanRegion.regionLeft = call.getInt("left")!
+                scanRegion.regionRight = call.getInt("right")!
+                scanRegion.regionMeasuredByPercentage = call.getInt("measuredByPercentage")!
+                var error: NSError? = NSError()
+                self.dce.setScanRegion(scanRegion, error: &error)
+            }
             var ret = PluginCallResultData()
             ret["success"] = true
             call.resolve(ret)

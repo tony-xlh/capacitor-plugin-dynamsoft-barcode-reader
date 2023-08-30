@@ -74,8 +74,8 @@
     }
   },
   "dependencies": {
-    "dynamsoft-camera-enhancer": "3.0.1",
-    "dynamsoft-javascript-barcode": "9.2.13"
+    "dynamsoft-camera-enhancer": "3.3.5",
+    "dynamsoft-javascript-barcode": "9.6.21"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

@@ -5,8 +5,8 @@ import { BarcodeReader, BarcodeScanner, TextResult as DBRTextResult } from "dyna
 import { CameraEnhancer } from 'dynamsoft-camera-enhancer';
 import { PlayCallbackInfo } from 'dynamsoft-camera-enhancer/dist/types/interface/playcallbackinfo';
 
-BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.2.13/dist/";
-CameraEnhancer.defaultUIElementURL = "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.0.1/dist/dce.ui.html";
+BarcodeReader.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.21/dist/";
+CameraEnhancer.defaultUIElementURL = "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.5/dist/dce.ui.html";
 
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private reader: BarcodeReader | null = null;

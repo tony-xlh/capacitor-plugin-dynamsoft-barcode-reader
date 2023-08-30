@@ -217,6 +217,12 @@
       });
       const base64 = image.base64String;
       const results = (await DBR.readImage({base64:base64})).results;
+      let text = "";
+      for (let index = 0; index < results.length; index++) {
+        const result = results[index];
+        text = text + result.barcodeText + "<br/>";
+      }
+      document.getElementById("results").innerHTML = text;
       alert("Found "+results.length+" results");
     }
 

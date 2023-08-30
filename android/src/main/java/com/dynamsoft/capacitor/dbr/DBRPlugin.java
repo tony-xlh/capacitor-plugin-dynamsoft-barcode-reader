@@ -2,6 +2,7 @@ package com.dynamsoft.capacitor.dbr;
 
 import android.Manifest;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
@@ -10,6 +11,8 @@ import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.dynamsoft.dbr.BarcodeReader;
 import com.dynamsoft.dbr.BarcodeReaderException;
@@ -33,6 +36,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
+import java.lang.reflect.Field;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -333,6 +337,49 @@ public class DBRPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void setLayout(PluginCall call){
+        if (mCameraEnhancer!=null) {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    if (call.hasOption("width") && call.hasOption("height") && call.hasOption("left") && call.hasOption("top")) {
+                        try{
+                            double width = getLayoutValue(call.getString("width"),true);
+                            double height = getLayoutValue(call.getString("height"),false);
+                            double left = getLayoutValue(call.getString("left"),true);
+                            double top = getLayoutValue(call.getString("top"),false);
+                            mCameraView.setX((int) left);
+                            mCameraView.setY((int) top);
+                            ViewGroup.LayoutParams cameraPreviewParams = mCameraView.getLayoutParams();
+                            cameraPreviewParams.width = (int) width;
+                            cameraPreviewParams.height = (int) height;
+                            mCameraView.setLayoutParams(cameraPreviewParams);
+                        }catch(Exception e) {
+                            Log.d("DBR",e.getMessage());
+                        }
+                    }
+                    call.resolve();
+                }
+            });
+        }else{
+            call.reject("not initialized");
+        }
+    }
+
+    private double getLayoutValue(String value,boolean isWidth) {
+        if (value.indexOf("%") != -1) {
+            double percent = Double.parseDouble(value.substring(0,value.length()-1))/100;
+            if (isWidth) {
+                return percent * Resources.getSystem().getDisplayMetrics().widthPixels;
+            }else{
+                return percent * Resources.getSystem().getDisplayMetrics().heightPixels;
+            }
+        }
+        if (value.indexOf("px") != -1) {
+            return Double.parseDouble(value.substring(0,value.length()-2));
+        }
+        return Double.parseDouble(value);
+    }
 
     private void initDBR(PluginCall call) throws BarcodeReaderException {
         BarcodeReader.initLicense(call.getString("license","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"), new DBRLicenseVerificationListener() {
@@ -359,6 +406,7 @@ public class DBRPlugin extends Plugin {
         mCameraEnhancer = new CameraEnhancer(getActivity());
         mCameraView = new DCECameraView(getActivity());
         mCameraEnhancer.setCameraView(mCameraView);
+
 
         FrameLayout.LayoutParams cameraPreviewParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,

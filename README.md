@@ -52,6 +52,7 @@ npx cap sync
 * [`setScanRegion(...)`](#setscanregion)
 * [`setZoom(...)`](#setzoom)
 * [`setFocus(...)`](#setfocus)
+* [`setLayout(...)`](#setlayout)
 * [`destroy()`](#destroy)
 * [`setEngineResourcePath(...)`](#setengineresourcepath)
 * [`setDefaultUIElementURL(...)`](#setdefaultuielementurl)
@@ -262,6 +263,21 @@ setFocus(options: { x: number; y: number; }) => Promise<{ success?: boolean; mes
 | Param         | Type                                   |
 | ------------- | -------------------------------------- |
 | **`options`** | <code>{ x: number; y: number; }</code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
+### setLayout(...)
+
+```typescript
+setLayout(options: { top?: string; bottom?: string; left?: string; right?: string; width?: string; height?: string; }) => Promise<{ success?: boolean; message?: string; }>
+```
+
+| Param         | Type                                                                                                            |
+| ------------- | --------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ top?: string; bottom?: string; left?: string; right?: string; width?: string; height?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
 

@@ -289,9 +289,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async setLayout(options: {top?: string, bottom?: string,left?:string,right?:string,width?:string, height?:string}): Promise<{success?: boolean, message?: string}> {
     if (this.enhancer) {
-      console.log(options);
       let ele = this.enhancer.getUIElement();
-      console.log(ele);
       if (options.top) {
         ele.style.top = options.top;
       }

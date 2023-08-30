@@ -378,7 +378,15 @@ public class DBRPlugin extends Plugin {
         if (value.indexOf("px") != -1) {
             return Double.parseDouble(value.substring(0,value.length()-2));
         }
-        return Double.parseDouble(value);
+        try {
+            return Double.parseDouble(value);
+        }catch(Exception e) {
+            if (isWidth) {
+                return Resources.getSystem().getDisplayMetrics().widthPixels;
+            }else{
+                return Resources.getSystem().getDisplayMetrics().heightPixels;
+            }
+        }
     }
 
     private void initDBR(PluginCall call) throws BarcodeReaderException {

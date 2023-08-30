@@ -50,6 +50,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>For photo usage</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>For photo add usage</string>
 	<key>NSCameraUsageDescription</key>
 	<string>For barcode scanning</string>
 </dict>

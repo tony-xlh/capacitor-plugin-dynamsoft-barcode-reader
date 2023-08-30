@@ -43,6 +43,18 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
         call.resolve(ret)
     }
     
+    @objc func readImage(_ call: CAPPluginCall) {
+        if (barcodeReader == nil){
+            call.reject("not initialized")
+        }else{
+            let base64 = call.getString("base64")!
+            let results = try? barcodeReader.decodeBase64(base64)
+            var ret = PluginCallResultData()
+            ret["results"]=wrapResults(results!,nil)
+            call.resolve(ret)
+        }
+    }
+    
     @objc func initRuntimeSettingsWithString(_ call: CAPPluginCall) {
         let template = call.getString("template") ?? ""
         if (template != ""){
@@ -331,30 +343,8 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
         
         let frame = dce.getFrameFromBuffer(false)
         let results = try? barcodeReader.decodeBuffer(frame.imageData, width: frame.width, height: frame.height, stride: frame.stride, format: EnumImagePixelFormat(rawValue: frame.pixelFormat) ?? EnumImagePixelFormat.NV21)
-        let count = results?.count ?? 0
-        NSLog("Found %d barcode(s)", count)
         var ret = PluginCallResultData()
-        let array = NSMutableArray();
-        for index in 0..<count {
-            let tr = results![index]
-            let points = tr.localizationResult?.resultPoints as! [CGPoint]
-            var result = PluginCallResultData()
-            result["barcodeText"] = tr.barcodeText
-            result["barcodeFormat"] = tr.barcodeFormatString
-            result["barcodeBytesBase64"] = tr.barcodeBytes?.base64EncodedString()
-            for j in 0..<4 {
-                var x = points[j].x
-                var y = points[j].y
-                if frame.isCropped {
-                    x = frame.cropRegion.minX + x
-                    y = frame.cropRegion.minY + y
-                }
-                result["x"+String(j+1)] = x
-                result["y"+String(j+1)] = y
-            }
-            array.add(result)
-        }
-        ret["results"]=array
+        ret["results"]=wrapResults(results,frame)
         ret["frameOrientation"] = frame.orientation
         if UIApplication.shared.statusBarOrientation.isLandscape {
             ret["deviceOrientation"] = "landscape"
@@ -362,6 +352,36 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
             ret["deviceOrientation"] = "portrait"
         }
         notifyListeners("onFrameRead", data: ret)
+    }
+    
+    func wrapResults(_ results:[iTextResult]?, _ frame: DCEFrame?) -> NSMutableArray{
+        
+        let array = NSMutableArray();
+        if results != nil {
+            let count = results?.count ?? 0
+            for index in 0..<count {
+                let tr = results![index]
+                let points = tr.localizationResult?.resultPoints as! [CGPoint]
+                var result = PluginCallResultData()
+                result["barcodeText"] = tr.barcodeText
+                result["barcodeFormat"] = tr.barcodeFormatString
+                result["barcodeBytesBase64"] = tr.barcodeBytes?.base64EncodedString()
+                for j in 0..<4 {
+                    var x = points[j].x
+                    var y = points[j].y
+                    if frame != nil {
+                        if frame!.isCropped {
+                            x = frame!.cropRegion.minX + x
+                            y = frame!.cropRegion.minY + y
+                        }
+                    }
+                    result["x"+String(j+1)] = x
+                    result["y"+String(j+1)] = y
+                }
+                array.add(result)
+            }
+        }
+        return array
     }
 
     @objc func requestCameraPermission(_ call: CAPPluginCall) {

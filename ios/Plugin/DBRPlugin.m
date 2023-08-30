@@ -11,6 +11,7 @@ CAP_PLUGIN(DBRPlugin, "DBR",
            CAP_PLUGIN_METHOD(toggleTorch, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(stopScan, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(pauseScan, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(readImage, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(resumeScan, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(requestCameraPermission, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getAllCameras, CAPPluginReturnPromise);

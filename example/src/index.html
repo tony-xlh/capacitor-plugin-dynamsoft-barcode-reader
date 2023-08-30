@@ -6,7 +6,15 @@
   <title>Dynamsoft Barcode Reader Example</title>
   <meta name="description" content="A light foundation for your next frontend project based on webpack.">
   <!--<script src="//cdn.jsdelivr.net/npm/eruda"></script>-->
-  <script>eruda.init();</script>
+  <!--<script>eruda.init();</script>-->
+  <script
+    type="module"
+    src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"
+  ></script>
+  <script
+    nomodule
+    src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.js"
+  ></script>
   <style>
     .barcode-polygon {
       fill:rgba(85,240,40,0.5);
@@ -80,7 +88,8 @@
   <div id="content">
     <h1>Dynamsoft Barcode Reader Example</h1>
     <p>Result:<div id="results"></div></p>
-    <button type="button" onClick="startScan()" disabled>Start Scan</button>
+    <button type="button" onClick="startScan()" disabled>Live Scan</button>
+    <button type="button" onClick="readImage()" disabled>Read Barcodes from an Image</button>
     <input id="continuousChechBox" type="checkbox" name="options" value="continuous" checked="checked"/>Continuous Scan
     <p>Powered by Dynamsoft Barcode Reader.</p>
   </div>
@@ -107,6 +116,7 @@
       if (result) {
         if (result.success == true) {
           document.getElementsByTagName("button")[0].disabled = "";
+          document.getElementsByTagName("button")[1].disabled = "";
           await loadCameras();
           loadResolutions();
           await DBR.setScanRegion({left:10,top:20,right:90,bottom:65,measuredByPercentage:1});
@@ -195,9 +205,17 @@
         }
         showOverlayOnSVG(retObj);
       });
-
       await DBR.startScan();
-      
+    }
+
+    async function readImage(){
+      const image = await Camera.getPhoto({
+        quality: 90,
+        resultType: "base64"
+      });
+      const base64 = image.base64String;
+      const results = await DBR.readImage({base64:base64});
+      alert("Found "+results.length+" results");
     }
 
     function GoToJS(){

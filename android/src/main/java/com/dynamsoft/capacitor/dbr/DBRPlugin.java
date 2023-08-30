@@ -67,7 +67,8 @@ public class DBRPlugin extends Plugin {
                         if (frame != null){
                             try {
                                 TextResult[] textResults = reader.decodeBuffer(frame.getImageData(),frame.getWidth(),frame.getHeight(),frame.getStrides()[0],frame.getPixelFormat());
-                                JSObject ret = wrapResults(textResults, frame);
+                                JSObject ret = new JSObject();
+                                ret.put("results",wrapResults(textResults, frame));
                                 ret.put("frameOrientation",frame.getOrientation());
                                 int deviceOrientation = getContext().getResources().getConfiguration().orientation;
                                 if (deviceOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -263,6 +264,24 @@ public class DBRPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void readImage(PluginCall call) {
+        if (reader == null) {
+            call.reject("not initialized");
+        }else{
+            String base64 = call.getString("base64");
+            try {
+                TextResult[] results = reader.decodeBase64String(base64);
+                JSObject ret = new JSObject();
+                ret.put("results",wrapResults(results,null));
+                call.resolve(ret);
+            } catch (BarcodeReaderException e) {
+                e.printStackTrace();
+                call.reject(e.getMessage());
+            }
+        }
+    }
+
+    @PluginMethod
     public void startScan(PluginCall call) {
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
@@ -279,7 +298,6 @@ public class DBRPlugin extends Plugin {
                 }
             }
         });
-
     }
 
     @PluginMethod
@@ -424,8 +442,7 @@ public class DBRPlugin extends Plugin {
         bridge.getWebView().bringToFront();
     }
 
-    private JSObject wrapResults(TextResult[] results, DCEFrame frame) {
-        JSObject ret = new JSObject();
+    private JSArray wrapResults(TextResult[] results, DCEFrame frame) {
         JSArray array = new JSArray();
         for (TextResult result:results){
             JSObject oneRet = new JSObject();
@@ -436,17 +453,18 @@ public class DBRPlugin extends Plugin {
             for (int i = 0; i < 4 ; i++) {
                 int x = result.localizationResult.resultPoints[i].x;
                 int y = result.localizationResult.resultPoints[i].y;
-                if (frame.getIsCropped()) {
-                    x = x + frame.getCropRegion().left;
-                    y = y + frame.getCropRegion().top;
+                if (frame != null) {
+                    if (frame.getIsCropped()) {
+                        x = x + frame.getCropRegion().left;
+                        y = y + frame.getCropRegion().top;
+                    }
                 }
                 oneRet.put("x"+(i+1), x);
                 oneRet.put("y"+(i+1), y);
             }
             array.put(oneRet);
         }
-        ret.put("results",array);
-        return ret;
+        return array;
     }
 
     private void makeWebViewTransparent(){

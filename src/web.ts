@@ -91,7 +91,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return {success:true};
   }
 
-  async readImage(options: { base64: string; }): Promise<TextResult[]> {
+  async readImage(options: { base64: string; }): Promise<{results:TextResult[]}> {
     let wrappedResults:TextResult[] = [];
     if (this.reader) {
       let results = await this.reader.decodeBase64String(options.base64);
@@ -113,7 +113,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
         wrappedResults.push(wrappedResult);
       }
     }
-    return wrappedResults;
+    return {results:wrappedResults};
   }
 
   async captureAndDecode() {

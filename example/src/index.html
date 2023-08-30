@@ -214,7 +214,7 @@
         resultType: "base64"
       });
       const base64 = image.base64String;
-      const results = await DBR.readImage({base64:base64});
+      const results = (await DBR.readImage({base64:base64})).results;
       alert("Found "+results.length+" results");
     }
 

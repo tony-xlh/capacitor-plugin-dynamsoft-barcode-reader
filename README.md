@@ -156,14 +156,14 @@ stopScan() => Promise<void>
 ### readImage(...)
 
 ```typescript
-readImage(options: { base64: string; }) => Promise<TextResult[]>
+readImage(options: { base64: string; }) => Promise<{ results: TextResult[]; }>
 ```
 
 | Param         | Type                             |
 | ------------- | -------------------------------- |
 | **`options`** | <code>{ base64: string; }</code> |
 
-**Returns:** <code>Promise&lt;TextResult[]&gt;</code>
+**Returns:** <code>Promise&lt;{ results: TextResult[]; }&gt;</code>
 
 --------------------
 

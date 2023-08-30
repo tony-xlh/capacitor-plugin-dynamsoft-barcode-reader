@@ -272,8 +272,19 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     
   }
 
-  setFocus(_options: { x: number; y: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
-    throw new Error('Method not implemented.');
+  async setFocus(options: { x: number; y: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
+    try {
+      await this.enhancer?.setFocus({
+        mode: "manual",
+        area: {centerPoint: {
+                x: options.x.toString(),
+                y: options.y.toString()
+            }
+        }});
+        return {success:true};
+    } catch (error) {
+      return {message:"failed"}
+    }
   }
 
   async setEngineResourcePath(path:string): Promise<void> {

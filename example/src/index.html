@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1">
   <title>Dynamsoft Barcode Reader Example</title>
   <meta name="description" content="A light foundation for your next frontend project based on webpack.">
-  <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+  <!--<script src="//cdn.jsdelivr.net/npm/eruda"></script>-->
   <script>eruda.init();</script>
   <style>
     .barcode-polygon {
@@ -84,16 +84,17 @@
     <input id="continuousChechBox" type="checkbox" name="options" value="continuous" checked="checked"/>Continuous Scan
     <p>Powered by Dynamsoft Barcode Reader.</p>
   </div>
-  <div class="overlay"></div>
-  <div class="controls">
-    <select id="cameraSelect"></select>
-    <select id="resolutionSelect"></select>
-    <button id="closeButton" type="button" onClick="stopScan()">Close</button>
-    <button id="zoominButton" type="button" onClick="zoomin()">+</button>
-    <button id="zoomoutButton" type="button" onClick="zoomout()">-</button>
-    <button id="toggleTorchButton" type="button" onClick="toggleTorch()">Toggle Torch</button>
+  <div class="scanner">
+    <div class="overlay"></div>
+    <div class="controls">
+      <select id="cameraSelect"></select>
+      <select id="resolutionSelect"></select>
+      <button id="closeButton" type="button" onClick="stopScan()">Close</button>
+      <button id="zoominButton" type="button" onClick="zoomin()">+</button>
+      <button id="zoomoutButton" type="button" onClick="zoomout()">-</button>
+      <button id="toggleTorchButton" type="button" onClick="toggleTorch()">Toggle Torch</button>
+    </div>
   </div>
-  
   <script>
     let currentResolution = "1920x1080";
     let torchOn = false;
@@ -106,13 +107,23 @@
       if (result) {
         if (result.success == true) {
           document.getElementsByTagName("button")[0].disabled = "";
-          loadCameras();
+          await loadCameras();
           loadResolutions();
           await DBR.setScanRegion({left:10,top:20,right:90,bottom:65,measuredByPercentage:1});
           return;
         }
       }
       alert("failed to initialize.");
+    }
+
+    async function setLayout(){
+      await DBR.setLayout({left:"75%",top:"0px",width:"25%",height:"200px"});
+      let scanner = document.getElementsByClassName("scanner")[0];
+      scanner.style.left = "75%";
+      scanner.style.top = "0px";
+      scanner.style.width = "25%";
+      scanner.style.height = "200px";
+      scanner.style.position = "absolute";
     }
 
     async function loadCameras(){
@@ -166,6 +177,7 @@
       DBR.addListener('onPlayed', async (resResult) => {
         console.log("onPlayed");
         console.log(resResult);
+        setLayout();
         currentResolution = resResult.resolution;
         updateResolutionSelect(resResult.resolution);
       });

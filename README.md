@@ -43,6 +43,7 @@ npx cap sync
 * [`resumeScan()`](#resumescan)
 * [`pauseScan()`](#pausescan)
 * [`stopScan()`](#stopscan)
+* [`readImage(...)`](#readimage)
 * [`requestCameraPermission()`](#requestcamerapermission)
 * [`getAllCameras()`](#getallcameras)
 * [`getSelectedCamera()`](#getselectedcamera)
@@ -148,6 +149,21 @@ pauseScan() => Promise<void>
 ```typescript
 stopScan() => Promise<void>
 ```
+
+--------------------
+
+
+### readImage(...)
+
+```typescript
+readImage(options: { base64: string; }) => Promise<TextResult[]>
+```
+
+| Param         | Type                             |
+| ------------- | -------------------------------- |
+| **`options`** | <code>{ base64: string; }</code> |
+
+**Returns:** <code>Promise&lt;TextResult[]&gt;</code>
 
 --------------------
 
@@ -369,6 +385,23 @@ removeAllListeners() => Promise<void>
 | ---------------- | ------------------- |
 | **`license`**    | <code>string</code> |
 | **`dceLicense`** | <code>string</code> |
+
+
+#### TextResult
+
+| Prop                     | Type                |
+| ------------------------ | ------------------- |
+| **`barcodeText`**        | <code>string</code> |
+| **`barcodeFormat`**      | <code>string</code> |
+| **`barcodeBytesBase64`** | <code>string</code> |
+| **`x1`**                 | <code>number</code> |
+| **`y1`**                 | <code>number</code> |
+| **`x2`**                 | <code>number</code> |
+| **`y2`**                 | <code>number</code> |
+| **`x3`**                 | <code>number</code> |
+| **`y3`**                 | <code>number</code> |
+| **`x4`**                 | <code>number</code> |
+| **`y4`**                 | <code>number</code> |
 
 
 #### ScanRegion

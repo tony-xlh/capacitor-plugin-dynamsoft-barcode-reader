@@ -91,6 +91,31 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return {success:true};
   }
 
+  async readImage(options: { base64: string; }): Promise<TextResult[]> {
+    let wrappedResults:TextResult[] = [];
+    if (this.reader) {
+      let results = await this.reader.decodeBase64String(options.base64);
+      for (let index = 0; index < results.length; index++) {
+        const result = results[index];
+        const wrappedResult =  {
+          barcodeText:result.barcodeText,
+          barcodeFormat:result.barcodeFormatString,
+          barcodeBytesBase64:this.arrayBufferToBase64(result.barcodeBytes),
+          x1:result.localizationResult.x1,
+          y1:result.localizationResult.y1,
+          x2:result.localizationResult.x2,
+          y2:result.localizationResult.y2,
+          x3:result.localizationResult.x3,
+          y3:result.localizationResult.y3,
+          x4:result.localizationResult.x4,
+          y4:result.localizationResult.y4,
+        }
+        wrappedResults.push(wrappedResult);
+      }
+    }
+    return wrappedResults;
+  }
+
   async captureAndDecode() {
     if (this.enhancer == null || this.reader == null) {
       return
@@ -269,7 +294,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }else{
       return {message:"not initialized"};
     }
-    
   }
 
   async setFocus(options: { x: number; y: number; }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {

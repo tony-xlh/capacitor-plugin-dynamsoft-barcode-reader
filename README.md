@@ -272,12 +272,12 @@ setFocus(options: { x: number; y: number; }) => Promise<{ success?: boolean; mes
 ### setLayout(...)
 
 ```typescript
-setLayout(options: { top?: string; bottom?: string; left?: string; right?: string; width?: string; height?: string; }) => Promise<{ success?: boolean; message?: string; }>
+setLayout(options: { top: string; left: string; width: string; height: string; }) => Promise<{ success?: boolean; message?: string; }>
 ```
 
-| Param         | Type                                                                                                            |
-| ------------- | --------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ top?: string; bottom?: string; left?: string; right?: string; width?: string; height?: string; }</code> |
+| Param         | Type                                                                       |
+| ------------- | -------------------------------------------------------------------------- |
+| **`options`** | <code>{ top: string; left: string; width: string; height: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
 

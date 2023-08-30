@@ -177,7 +177,7 @@
       DBR.addListener('onPlayed', async (resResult) => {
         console.log("onPlayed");
         console.log(resResult);
-        setLayout();
+        //setLayout(); to test the setLayout method
         currentResolution = resResult.resolution;
         updateResolutionSelect(resResult.resolution);
       });

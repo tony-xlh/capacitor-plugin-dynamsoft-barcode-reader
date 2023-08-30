@@ -18,6 +18,7 @@ export interface DBRPlugin {
   setScanRegion(options: ScanRegion): Promise<{success?: boolean, message?: string}>;
   setZoom(options: {factor: number}): Promise<{success?: boolean, message?: string}>;
   setFocus(options: {x: number, y: number}): Promise<{success?: boolean, message?: string}>;
+  setLayout(options: {top?: string, bottom?: string,left?:string,right?:string,width?:string, height?:string}): Promise<{success?: boolean, message?: string}>;
   destroy(): Promise<void>;
   setEngineResourcePath(path:string): Promise<void>;
   setDefaultUIElementURL(url:string): Promise<void>;

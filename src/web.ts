@@ -287,6 +287,35 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     }
   }
 
+  async setLayout(options: {top?: string, bottom?: string,left?:string,right?:string,width?:string, height?:string}): Promise<{success?: boolean, message?: string}> {
+    if (this.enhancer) {
+      console.log(options);
+      let ele = this.enhancer.getUIElement();
+      console.log(ele);
+      if (options.top) {
+        ele.style.top = options.top;
+      }
+      if (options.bottom) {
+        ele.style.bottom = options.bottom;
+      }
+      if (options.left) {
+        ele.style.left = options.left;
+      }
+      if (options.right) {
+        ele.style.right = options.right;
+      }
+      if (options.width) {
+        ele.style.width = options.width;
+      }
+      if (options.height) {
+        ele.style.height = options.height;
+      }
+      return {success:true}
+    }else{
+      return {message:"not initialized"}
+    }
+  }
+
   async setEngineResourcePath(path:string): Promise<void> {
     BarcodeReader.engineResourcePath = path;
   }

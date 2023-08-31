@@ -53,6 +53,7 @@ npx cap sync
 * [`setScanRegion(...)`](#setscanregion)
 * [`setZoom(...)`](#setzoom)
 * [`setFocus(...)`](#setfocus)
+* [`setInterval(...)`](#setinterval)
 * [`setLayout(...)`](#setlayout)
 * [`destroy()`](#destroy)
 * [`setEngineResourcePath(...)`](#setengineresourcepath)
@@ -281,6 +282,19 @@ setFocus(options: { x: number; y: number; }) => Promise<{ success?: boolean; mes
 | **`options`** | <code>{ x: number; y: number; }</code> |
 
 **Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
+
+### setInterval(...)
+
+```typescript
+setInterval(options: { interval: number; }) => Promise<void>
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ interval: number; }</code> |
 
 --------------------
 

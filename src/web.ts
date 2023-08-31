@@ -12,7 +12,8 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   private reader: BarcodeReader | null = null;
   private enhancer: CameraEnhancer | null = null;
   private interval!: any;
-  private decoding: boolean = false;
+  private decoding: boolean = false; 
+  private delay:number = 100;
 
   async toggleTorch(options:{ on:boolean}){
     if (this.enhancer) {
@@ -190,7 +191,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       clearInterval(this.interval);
     }
     this.decoding = false;
-    this.interval = setInterval(this.captureAndDecode.bind(this),100);
+    this.interval = setInterval(this.captureAndDecode.bind(this),this.delay);
   }
 
   stopDecoding() {
@@ -329,6 +330,13 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
       return {success:true}
     }else{
       return {message:"not initialized"}
+    }
+  }
+
+  async setInterval(options: {interval:number}): Promise<void> {
+    this.delay = options.interval;
+    if (this.interval) {
+      this.startDecoding();
     }
   }
 

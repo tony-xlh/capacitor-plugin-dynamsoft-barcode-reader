@@ -207,6 +207,7 @@
         }
         showOverlayOnSVG(retObj);
       });
+      await DBR.setInterval({interval:5000});
       await DBR.startScan();
     }
 

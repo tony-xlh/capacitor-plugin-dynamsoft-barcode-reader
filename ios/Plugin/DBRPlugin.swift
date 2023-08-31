@@ -15,6 +15,7 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
     var dceView:DCECameraView! = nil
     var barcodeReader:DynamsoftBarcodeReader! = nil
     var timer:Timer! = nil;
+    var interval:Double = 100.0;
     
     @objc func destroy(_ call: CAPPluginCall) {
         if (barcodeReader == nil) {
@@ -72,7 +73,7 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
                 if timer != nil {
                     timer.invalidate()
                 }
-                timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(decodingTask), userInfo: nil, repeats: true)
+                timer = Timer.scheduledTimer(timeInterval: self.interval/1000, target: self, selector: #selector(decodingTask), userInfo: nil, repeats: true)
             }
         }else{
             call.reject("not initialized")
@@ -279,6 +280,18 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
             }
             call.resolve()
         }
+    }
+    
+    @objc func setInterval(_ call: CAPPluginCall) {
+        self.interval = Double(call.getInt("interval") ?? 100)
+        if timer != nil {
+            DispatchQueue.main.sync {
+                timer.invalidate()
+                timer = Timer.scheduledTimer(timeInterval: self.interval/1000, target: self, selector: #selector(decodingTask), userInfo: nil, repeats: true)
+            }
+        }
+        call.resolve()
+
     }
     
     func getLayoutValue(_ value: String,_ isWidth: Bool) -> CGFloat {

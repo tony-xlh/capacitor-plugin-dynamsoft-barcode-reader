@@ -55,7 +55,7 @@ public class DBRPlugin extends Plugin {
     private BarcodeReader reader = null;
     private Timer timer = null;
     private EnumCameraState previousCameraStatus = null;
-
+    private long period = 100;
     private void startDecodingTimer(){
         timer = new Timer();
         TimerTask task = new TimerTask() {
@@ -86,7 +86,7 @@ public class DBRPlugin extends Plugin {
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 1000, 100);
+        timer.scheduleAtFixedRate(task, 1000, period);
     }
 
     @PluginMethod
@@ -279,6 +279,17 @@ public class DBRPlugin extends Plugin {
                 call.reject(e.getMessage());
             }
         }
+    }
+
+    @PluginMethod
+    public void setInterval(PluginCall call) {
+        long value = call.getInt("interval",100);
+        period = value;
+        if (timer != null) {
+            timer.cancel();
+            startDecodingTimer();
+        }
+        call.resolve();
     }
 
     @PluginMethod

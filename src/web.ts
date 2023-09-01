@@ -68,7 +68,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async initialize(options?:Options): Promise<{success:boolean}> {
     if (this.reader === null){
       if (options) {
-        if (options.license){
+        if (options.license && BarcodeReader.isWasmLoaded() === false){
           BarcodeReader.license = options.license;
         }
       }

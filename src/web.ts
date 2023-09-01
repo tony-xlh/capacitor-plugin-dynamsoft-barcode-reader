@@ -72,22 +72,24 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
           BarcodeReader.license = options.license;
         }
       }
-
-      this.enhancer = await CameraEnhancer.createInstance();
-      this.enhancer.setVideoFit("cover");
       this.reader = await BarcodeScanner.createInstance();
       await this.reader.updateRuntimeSettings('balance');
+    }else{
+      console.log("reader already initialized.");
+    }
+    if (this.enhancer === null){
+      this.enhancer = await CameraEnhancer.createInstance();
+      this.enhancer.setVideoFit("cover");
       this.enhancer.on("played", (playCallBackInfo:PlayCallbackInfo) => {
         this.notifyListeners("onPlayed", {resolution:playCallBackInfo.width+"x"+playCallBackInfo.height});
       });
       await this.enhancer.setUIElement(CameraEnhancer.defaultUIElementURL);
-
       this.enhancer.getUIElement().getElementsByClassName("dce-btn-close")[0].remove();
       this.enhancer.getUIElement().getElementsByClassName("dce-sel-camera")[0].remove();
       this.enhancer.getUIElement().getElementsByClassName("dce-sel-resolution")[0].remove();
       this.enhancer.getUIElement().getElementsByClassName("dce-msg-poweredby")[0].remove();
     }else{
-      console.log("Scanner already initialized.");
+      console.log("enhancer already initialized.");
     }
     return {success:true};
   }
@@ -182,8 +184,16 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async startScan(): Promise<void> {
-    await this.enhancer?.open(true);
-    this.startDecoding();
+    try{
+      if (this.enhancer) {
+        await this.enhancer.open(true);
+        this.startDecoding();
+      }else{
+        throw new Error("not initialized")        
+      }
+    }catch(e){
+      throw e;
+    }
   }
 
   startDecoding() {

@@ -120,13 +120,13 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   }
 
   async captureAndDecode() {
-    if (this.enhancer == null || this.reader == null) {
+    if (this.enhancer === null || this.reader === null) {
       return
     }
-    if (this.enhancer.isOpen() == false) {
+    if (this.enhancer.isOpen() === false) {
       return;
     }
-    if (this.decoding == true) {
+    if (this.decoding === true) {
       return;
     }
     let frame = this.enhancer.getFrame();
@@ -185,12 +185,11 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async startScan(): Promise<void> {
     try{
-      if (this.enhancer) {
-        await this.enhancer.open(true);
-        this.startDecoding();
-      }else{
-        throw new Error("not initialized")        
+      if (!this.enhancer) {
+        await this.initialize();
       }
+      await this.enhancer?.open(true);
+      this.startDecoding();
     }catch(e){
       throw e;
     }

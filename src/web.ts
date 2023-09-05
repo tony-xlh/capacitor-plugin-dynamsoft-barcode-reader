@@ -185,9 +185,6 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
 
   async startScan(): Promise<void> {
     try{
-      if (!this.enhancer) {
-        await this.initialize();
-      }
       await this.enhancer?.open(true);
       this.startDecoding();
     }catch(e){

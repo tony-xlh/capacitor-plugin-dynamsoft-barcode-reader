@@ -1,6 +1,7 @@
 import { PluginListenerHandle } from "@capacitor/core";
 
 export interface DBRPlugin {
+  initLicense(options: {license:string}): Promise<{success?: boolean, message?: string}>;
   initialize(options?: Options): Promise<{success?: boolean, message?: string}>;
   initRuntimeSettingsWithString(options: {template: string}): Promise<void>;
   toggleTorch(options: {on: boolean}): Promise<void>;

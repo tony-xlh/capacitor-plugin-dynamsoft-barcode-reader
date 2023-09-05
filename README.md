@@ -35,6 +35,7 @@ npx cap sync
 
 <docgen-index>
 
+* [`initLicense(...)`](#initlicense)
 * [`initialize(...)`](#initialize)
 * [`initRuntimeSettingsWithString(...)`](#initruntimesettingswithstring)
 * [`toggleTorch(...)`](#toggletorch)
@@ -67,6 +68,21 @@ npx cap sync
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+### initLicense(...)
+
+```typescript
+initLicense(options: { license: string; }) => Promise<{ success?: boolean; message?: string; }>
+```
+
+| Param         | Type                              |
+| ------------- | --------------------------------- |
+| **`options`** | <code>{ license: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ success?: boolean; message?: string; }&gt;</code>
+
+--------------------
+
 
 ### initialize(...)
 

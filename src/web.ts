@@ -15,6 +15,17 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   private decoding: boolean = false; 
   private delay:number = 100;
 
+  async initLicense(options: { license:string }): Promise<{ success?: boolean | undefined; message?: string | undefined; }> {
+    try {
+      BarcodeReader.license = options.license;
+      await BarcodeReader.loadWasm();
+      return {success:true};
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   async toggleTorch(options:{ on:boolean}){
     if (this.enhancer) {
       try{

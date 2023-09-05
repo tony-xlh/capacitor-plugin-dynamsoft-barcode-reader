@@ -106,6 +106,23 @@ public class DBRPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void initLicense(PluginCall call){
+        BarcodeReader.initLicense(call.getString("license","DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="), new DBRLicenseVerificationListener() {
+            @Override
+            public void DBRLicenseVerificationCallback(boolean isSuccessful, Exception e) {
+                if (!isSuccessful) {
+                    call.reject(e.getMessage());
+                    e.printStackTrace();
+                }else{
+                    JSObject result = new JSObject();
+                    result.put("success",true);
+                    call.resolve(result);
+                }
+            }
+        });
+    }
+
+    @PluginMethod
     public void initialize(PluginCall call) {
         try {
             if (reader==null) {
@@ -114,8 +131,7 @@ public class DBRPlugin extends Plugin {
             Runnable dceInit = new Runnable() {
                 public void run() {
                     if (mCameraEnhancer == null) {
-                        String dceLicense = call.getString("dceLicense","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
-                        initDCE(dceLicense);
+                        initDCE(call);
                     }
                     synchronized(this)
                     {
@@ -419,27 +435,31 @@ public class DBRPlugin extends Plugin {
     }
 
     private void initDBR(PluginCall call) throws BarcodeReaderException {
-        BarcodeReader.initLicense(call.getString("license","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"), new DBRLicenseVerificationListener() {
-            @Override
-            public void DBRLicenseVerificationCallback(boolean isSuccessful, Exception e) {
-                if (!isSuccessful) {
-                    e.printStackTrace();
+        if (call.hasOption("license")) {
+            BarcodeReader.initLicense(call.getString("license","DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="), new DBRLicenseVerificationListener() {
+                @Override
+                public void DBRLicenseVerificationCallback(boolean isSuccessful, Exception e) {
+                    if (!isSuccessful) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        }
         reader = new BarcodeReader();
     }
 
-    private void initDCE(String dceLicense){
-        CameraEnhancer.initLicense(dceLicense, new DCELicenseVerificationListener() {
-            @Override
-            public void DCELicenseVerificationCallback(boolean isSuccess, Exception error) {
-                if(!isSuccess){
-                    error.printStackTrace();
+    private void initDCE(PluginCall call){
+        if (call.hasOption("dceLicense")) {
+            String dceLicense = call.getString("dceLicense","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
+            CameraEnhancer.initLicense(dceLicense, new DCELicenseVerificationListener() {
+                @Override
+                public void DCELicenseVerificationCallback(boolean isSuccess, Exception error) {
+                    if(!isSuccess){
+                        error.printStackTrace();
+                    }
                 }
-            }
-        });
-
+            });
+        }
         mCameraEnhancer = new CameraEnhancer(getActivity());
         mCameraView = new DCECameraView(getActivity());
         mCameraEnhancer.setCameraView(mCameraView);

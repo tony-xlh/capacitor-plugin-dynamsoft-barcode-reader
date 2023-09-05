@@ -16,6 +16,7 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
     var barcodeReader:DynamsoftBarcodeReader! = nil
     var timer:Timer! = nil;
     var interval:Double = 100.0;
+    private var licenseCall:CAPPluginCall! = nil;
     
     @objc func destroy(_ call: CAPPluginCall) {
         if (barcodeReader == nil) {
@@ -31,11 +32,16 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
         }
     }
     
+    @objc func initLicense(_ call: CAPPluginCall) {
+        let license = call.getString("license") ?? "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="
+        licenseCall = call
+        DynamsoftBarcodeReader.initLicense(license, verificationDelegate: self)
+    }
+    
     @objc func initialize(_ call: CAPPluginCall) {
         if (barcodeReader == nil){
-            let license = call.getString("license") ?? "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"
-            let dceLicense = call.getString("dceLicense") ?? "DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9"
-            
+            let license = call.getString("license") ?? ""
+            let dceLicense = call.getString("dceLicense") ?? ""
             configurationDBR(license: license)
             configurationDCE(license: dceLicense)
         }
@@ -311,7 +317,9 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
     }
     
     func configurationDBR(license: String) {
-        DynamsoftBarcodeReader.initLicense(license, verificationDelegate: self)
+        if license != "" {
+            DynamsoftBarcodeReader.initLicense(license, verificationDelegate: self)
+        }
         barcodeReader = DynamsoftBarcodeReader.init()
     }
     
@@ -319,12 +327,25 @@ public class DBRPlugin: CAPPlugin, DBRLicenseVerificationListener, DCELicenseVer
     {
         let err = error as NSError?
         if(err != nil){
+            var msg:String? = nil
+            msg = err!.userInfo[NSUnderlyingErrorKey] as? String
+            if licenseCall != nil {
+                licenseCall.reject(msg ?? "")
+            }
             print("Server DBR license verify failed")
+        }else{
+            if licenseCall != nil {
+                var ret = PluginCallResultData()
+                ret["success"] = true
+                licenseCall.resolve(ret)
+            }
         }
     }
     
     func configurationDCE(license: String) {
-        DynamsoftCameraEnhancer.initLicense(license,verificationDelegate:self)
+        if license != "" {
+            DynamsoftCameraEnhancer.initLicense(license,verificationDelegate:self)
+        }
 
         // Initialize a camera view for previewing video.
         DispatchQueue.main.sync {

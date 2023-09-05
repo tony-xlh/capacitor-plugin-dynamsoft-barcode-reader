@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1">
   <title>Dynamsoft Barcode Reader Example</title>
   <meta name="description" content="A light foundation for your next frontend project based on webpack.">
-  <!--<script src="//cdn.jsdelivr.net/npm/eruda"></script>-->
-  <!--<script>eruda.init();</script>-->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
   <script
     type="module"
     src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"
@@ -114,8 +114,11 @@
 
     async function init() {
       await DBR.requestCameraPermission();
-      let licenseResult = await DBR.initLicense({license:"DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="});
-      console.log(licenseResult);
+      try {
+        await DBR.initLicense({license:"DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="});  
+      } catch (error) {
+        alert(error);
+      }
       let result = await DBR.initialize();
       if (result) {
         if (result.success == true) {

@@ -24,12 +24,12 @@ npm install <path-to-the-project>
 npx cap sync
 ```
 
-## Demo
+## Demos
 
-* <https://github.com/xulihang/Ionic-React-QR-Code-Scanner>
-* <https://github.com/xulihang/capacitor-plugin-dynamsoft-barcode-reader/tree/main/example>
-* <https://github.com/xulihang/capacitor-qr-code-scanner>
-
+* [Ionic React](https://github.com/xulihang/Ionic-React-QR-Code-Scanner)
+* [Quasar + Vue 2](https://github.com/tony-xlh/Quasar-QR-Code-Scanner)
+* [Ionic + Vue 3](https://github.com/tony-xlh/Ionic-Vue-QR-Code-Scanner)
+* [Vanilla JS](https://github.com/xulihang/capacitor-qr-code-scanner)
 
 ## API
 

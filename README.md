@@ -4,6 +4,13 @@
 
 A capacitor plugin for [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/) and [Dynamsoft Camera Enhancer](https://www.dynamsoft.com/camera-enhancer/docs/introduction/).
 
+## SDK Versions Used for Different Platforms
+
+| Product      | Android |    iOS |
+| ----------- | ----------- | -----------  |
+| Dynamsoft Barcode Reader    | 9.x       | 9.x     |
+| Dynamsoft Camera Enhancer    | 2.x       | 2.x     |
+
 ## Supported Platforms
 
 * Android

@@ -6,10 +6,10 @@ A capacitor plugin for [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barc
 
 ## SDK Versions Used for Different Platforms
 
-| Product      | Android |    iOS |
-| ----------- | ----------- | -----------  |
-| Dynamsoft Barcode Reader    | 9.x       | 9.x     |
-| Dynamsoft Camera Enhancer    | 2.x       | 2.x     |
+| Product      | Android |    iOS | Web |
+| ----------- | ----------- | -----------  | -------  |
+| Dynamsoft Barcode Reader    | 9.x       | 9.x     | 9.x     |
+| Dynamsoft Camera Enhancer    | 2.x       | 2.x     | 2.x     |
 
 ## Supported Platforms
 

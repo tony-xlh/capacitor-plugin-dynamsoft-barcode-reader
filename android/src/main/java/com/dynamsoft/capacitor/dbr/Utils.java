@@ -48,7 +48,7 @@ public class Utils {
         JSObject map = new JSObject ();
         map.put("barcodeFormat",result.getFormatString());
         map.put("barcodeText",result.getText());
-        map.put("barcodeBytesBase64",result.getText());
+        map.put("barcodeBytesBase64", Base64.encodeToString(result.getBytes(),Base64.DEFAULT));
         map.put("x1",result.getLocation().points[0].x);
         map.put("x2",result.getLocation().points[1].x);
         map.put("x3",result.getLocation().points[2].x);

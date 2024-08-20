@@ -10,5 +10,9 @@
 	{
 		"pkg": "capacitor-plugin-camera",
 		"classpath": "com.tonyxlh.capacitor.camera.CameraPreviewPlugin"
+	},
+	{
+		"pkg": "capacitor-plugin-dynamsoft-barcode-reader",
+		"classpath": "com.dynamsoft.capacitor.dbr.DBRPlugin"
 	}
 ]

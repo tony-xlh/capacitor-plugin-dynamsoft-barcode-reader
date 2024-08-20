@@ -8,7 +8,7 @@
 		"classpath": "com.capacitorjs.plugins.splashscreen.SplashScreenPlugin"
 	},
 	{
-		"pkg": "capacitor-plugin-dynamsoft-barcode-reader",
-		"classpath": "com.dynamsoft.capacitor.dbr.DBRPlugin"
+		"pkg": "capacitor-plugin-camera",
+		"classpath": "com.tonyxlh.capacitor.camera.CameraPreviewPlugin"
 	}
 ]

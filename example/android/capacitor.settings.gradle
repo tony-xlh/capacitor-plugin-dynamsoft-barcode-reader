@@ -8,5 +8,8 @@ project(':capacitor-camera').projectDir = new File('../node_modules/@capacitor/c
 include ':capacitor-splash-screen'
 project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capacitor/splash-screen/android')
 
+include ':capacitor-plugin-camera'
+project(':capacitor-plugin-camera').projectDir = new File('../node_modules/capacitor-plugin-camera/android')
+
 include ':capacitor-plugin-dynamsoft-barcode-reader'
 project(':capacitor-plugin-dynamsoft-barcode-reader').projectDir = new File('../../android')

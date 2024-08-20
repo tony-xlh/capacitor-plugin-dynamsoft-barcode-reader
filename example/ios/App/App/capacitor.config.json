@@ -10,6 +10,7 @@
 	"packageClassList": [
 		"CAPCameraPlugin",
 		"SplashScreenPlugin",
+		"CameraPreviewPlugin",
 		"DBRPlugin"
 	]
 }

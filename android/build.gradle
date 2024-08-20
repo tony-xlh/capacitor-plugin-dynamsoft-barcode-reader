@@ -47,6 +47,13 @@ repositories {
     mavenCentral()
 }
 
+rootProject.allprojects {
+    repositories {
+        maven {
+            url "https://download2.dynamsoft.com/maven/aar"
+        }
+    }
+}
 
 dependencies {
     implementation 'com.dynamsoft:dynamsoftbarcodereader:10.0.20'

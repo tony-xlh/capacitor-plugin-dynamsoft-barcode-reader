@@ -76,5 +76,11 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "dynamsoft-barcode-reader": "10.0.20",
+    "dynamsoft-capture-vision-router": "2.0.31",
+    "dynamsoft-core": "3.0.32",
+    "dynamsoft-license": "3.0.40"
   }
 }

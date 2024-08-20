@@ -49,6 +49,11 @@ repositories {
 
 
 dependencies {
+    implementation 'com.dynamsoft:dynamsoftbarcodereader:10.0.20'
+    implementation 'com.dynamsoft:dynamsoftcapturevisionrouter:2.0.20'
+    implementation 'com.dynamsoft:dynamsoftcore:3.0.20'
+    implementation 'com.dynamsoft:dynamsoftimageprocessing:2.0.20'
+    implementation 'com.dynamsoft:dynamsoftlicense:3.0.20'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"

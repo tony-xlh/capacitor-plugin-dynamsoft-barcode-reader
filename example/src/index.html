@@ -8,19 +8,52 @@
       content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="format-detection" content="telephone=no" />
+    <style>
+      .home {
+        padding-top: env(safe-area-inset-top);
+      }
+
+      .overlay {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+      }
+
+      #closeButton {
+        top:0;
+        top:env(safe-area-inset-top);
+        right:0;
+        height: 20px;
+        position:absolute;
+      }
+
+      #toggleTorchButton {
+        bottom: 0;
+        left: 0;
+        height: 20px;
+        position: absolute;
+        font-family:monospace;
+      }
+    </style>
   </head>
   <body>
     <main>
-      <h1>Capacitor Test Plugin Project</h1>
-      <p>
-        This project can be used to test out the functionality of your plugin. Nothing in the <em>example/</em> folder
-        will be published to npm when using this template, so you can create away!
-      </p>
-      <label for="echoInput">Echo Text:</label>
-      <input type="text" id="echoInput" name="echoInput" value="Hello World!" />
-      <button onclick="testEcho()">Click Me!</button>
+      <div class="home">
+        <h2>Barcode Reader</h2>
+        <button id="startScanButton" type="button">Start Live Scan</button>
+        <div id="results">
+        </div>
+      </div>
+      <div class="controls" style="display:none;">
+        <div class="camera">
+          <div class="dce-video-container"></div>
+        </div>
+        <button id="closeButton" type="button">Close</button>
+        <button id="toggleTorchButton" type="button">Toggle Torch</button>
+      </div>
     </main>
-
     <script src="./js/example.js" type="module"></script>
   </body>
 </html>

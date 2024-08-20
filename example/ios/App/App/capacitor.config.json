@@ -1,11 +1,15 @@
 {
-	"appId": "com.dynamsoft.qrcodescanner",
-	"appName": "QR Code Scanner",
-	"webDir": "build",
-	"bundledWebRuntime": false,
-	"server": {
-		"allowNavigation": [
-			"*"
-		]
-	}
+	"appId": "com.example.plugin",
+	"appName": "example",
+	"webDir": "dist",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 0
+		}
+	},
+	"packageClassList": [
+		"CAPCameraPlugin",
+		"SplashScreenPlugin",
+		"DBRPlugin"
+	]
 }

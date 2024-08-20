@@ -1,10 +1,12 @@
-## Barcode Reader example using Webpack Frontend Starterkit
+## Created with Capacitor Create App
 
+This app was created using [`@capacitor/create-app`](https://github.com/ionic-team/create-capacitor-app),
+and comes with a very minimal shell for building an app.
 
-How to run:
+### Running this example
 
-1. npm install
-2. Run `npm run start` to start the web demo
-3. Run `npm run build` to build the static files
-4. Run `npx cap sync` to sync the files
-5. Run `npx cap open android` to open the Android project, `npx cap open ios` to open the iOS project
+To run the provided example, you can use `npm start` command.
+
+```bash
+npm start
+```

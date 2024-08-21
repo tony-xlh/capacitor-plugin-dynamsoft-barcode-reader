@@ -85,11 +85,11 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
             x1:result.location.points[0].x,
             y1:result.location.points[0].y,
             x2:result.location.points[1].x,
-            y2:result.location.points[1].x,
+            y2:result.location.points[1].y,
             x3:result.location.points[2].x,
-            y3:result.location.points[2].x,
+            y3:result.location.points[2].y,
             x4:result.location.points[3].x,
-            y4:result.location.points[3].x,
+            y4:result.location.points[3].y,
           }
           wrappedResults.push(wrappedResult);
         }

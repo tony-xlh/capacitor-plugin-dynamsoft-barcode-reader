@@ -24,6 +24,9 @@
   "bugs": {
     "url": "https://github.com/tony-xlh/capacitor-plugin-dynamsoft-barcode-reader/issues"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "keywords": [
     "capacitor",
     "plugin",

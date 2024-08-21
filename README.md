@@ -1,6 +1,8 @@
 # capacitor-plugin-dynamsoft-barcode-reader
 
-A capacitor plugin for Dynamsoft Barcode Reader
+![version](https://img.shields.io/npm/v/capacitor-plugin-dynamsoft-barcode-reader.svg)
+
+A capacitor plugin for [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/).
 
 ## Install
 
@@ -8,6 +10,31 @@ A capacitor plugin for Dynamsoft Barcode Reader
 npm install capacitor-plugin-dynamsoft-barcode-reader
 npx cap sync
 ```
+
+## Supported Platforms
+
+* Android
+* iOS
+* Web
+
+## Capacitor Versions
+
+For Capacitor 6, use 2.x.
+
+For Capacitor <= 5, use 1.x.
+
+## SDK Versions Used for Different Platforms
+
+| Product      | Android |    iOS | Web |
+| ----------- | ----------- | -----------  | -------  |
+| Dynamsoft Barcode Reader    | 10.0.20       | 10.0.20     | 10.0.20     |
+
+## Demos
+
+* [Ionic React](https://github.com/xulihang/Ionic-React-QR-Code-Scanner)
+* [Quasar + Vue 2](https://github.com/tony-xlh/Quasar-QR-Code-Scanner)
+* [Ionic + Vue 3](https://github.com/tony-xlh/Ionic-Vue-QR-Code-Scanner)
+* [Vanilla JS](https://github.com/xulihang/capacitor-qr-code-scanner)
 
 ## API
 

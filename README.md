@@ -29,6 +29,33 @@ For Capacitor <= 5, use 1.x.
 | ----------- | ----------- | -----------  | -------  |
 | Dynamsoft Barcode Reader    | 10.0.20       | 10.0.20     | 10.0.20     |
 
+## Supported Barcode Symbologies
+
+* Code 11
+* Code 39
+* Code 93
+* Code 128
+* Codabar
+* EAN-8
+* EAN-13
+* UPC-A
+* UPC-E
+* Interleaved 2 of 5 (ITF)
+* Industrial 2 of 5 (Code 2 of 5 Industry, Standard 2 of 5, Code 2 of 5)
+* ITF-14 
+* QRCode
+* DataMatrix
+* PDF417
+* GS1 DataBar
+* Maxicode
+* Micro PDF417
+* Micro QR
+* PatchCode
+* GS1 Composite
+* Postal Code
+* Dot Code
+* Pharmacode
+
 ## Demos
 
 * [Ionic React](https://github.com/xulihang/Ionic-React-QR-Code-Scanner)

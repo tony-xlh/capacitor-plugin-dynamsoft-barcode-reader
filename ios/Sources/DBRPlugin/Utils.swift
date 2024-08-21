@@ -58,7 +58,7 @@ class Utils {
     static func wrapBarcodeResult (result:BarcodeResultItem) -> [String: Any] {
         var dict: [String: Any] = [:]
         dict["barcodeText"] = result.text
-        dict["barcodeFormatString"] = result.formatString
+        dict["barcodeFormat"] = result.formatString
         dict["barcodeBytesBase64"] = result.bytes.base64EncodedString()
         dict["x1"] = (result.location.points[0] as! CGPoint).x
         dict["x2"] = (result.location.points[1] as! CGPoint).x

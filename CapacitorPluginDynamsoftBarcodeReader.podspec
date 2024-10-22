@@ -13,10 +13,6 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}'
   s.ios.deployment_target  = '13.0'
   s.dependency 'Capacitor'
-  s.dependency 'DynamsoftBarcodeReader', '= 10.0.20'
-  s.dependency 'DynamsoftCaptureVisionRouter', '= 2.0.20'
-  s.dependency 'DynamsoftCore', '= 3.0.20'
-  s.dependency 'DynamsoftImageProcessing', '= 2.0.20'
-  s.dependency 'DynamsoftLicense', '= 3.0.20'
+  s.dependency 'DynamsoftBarcodeReaderBundle', '= 10.4.2000'
   s.swift_version = '5.1'
 end

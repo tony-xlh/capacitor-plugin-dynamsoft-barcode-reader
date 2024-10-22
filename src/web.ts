@@ -1,8 +1,8 @@
 import { WebPlugin } from '@capacitor/core';
 
 import { DBRPlugin, TextResult } from './definitions';
-import { CaptureVisionRouter } from "dynamsoft-capture-vision-router";
-import { CapturedResult, CoreModule } from 'dynamsoft-core';
+import { CapturedResult, CaptureVisionRouter } from "dynamsoft-capture-vision-router";
+import { CoreModule } from 'dynamsoft-core';
 import { LicenseManager } from 'dynamsoft-license';
 import { BarcodeResultItem } from 'dynamsoft-barcode-reader';
 import "dynamsoft-license";
@@ -12,24 +12,12 @@ import "dynamsoft-capture-vision-router";
 export class DBRWeb extends WebPlugin implements DBRPlugin {
   private cvr:CaptureVisionRouter | undefined;
   private engineResourcePaths: any = {
-    core: "https://cdn.jsdelivr.net/npm/dynamsoft-core@3.0.30/dist/",
-    license: "https://cdn.jsdelivr.net/npm/dynamsoft-license@3.0.20/dist/",
-    cvr: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@2.0.30/dist/",
-    dbr: "https://cdn.jsdelivr.net/npm/dynamsoft-barcode-reader@10.0.20/dist/",
-    std: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-std@1.0.0/dist/",
-    dip: "https://cdn.jsdelivr.net/npm/dynamsoft-image-processing@2.0.30/dist/"
+    rootDirectory: "https://cdn.jsdelivr.net/npm/"
   };
   
   async initLicense(options: { license: string }): Promise<{success?: boolean, message?: string}> {
     try {
-      let result = await LicenseManager.initLicense(options.license);
-      if (result) {
-        if (!result.isSuccess) {
-          if (result.error) {
-            throw result.error;
-          }
-        }
-      }
+      await LicenseManager.initLicense(options.license);
     } catch (error) {
       console.log(error);
       throw error;
@@ -44,7 +32,7 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
   async initialize(): Promise<{success:boolean}> {
     try {
       // Configures the paths where the .wasm files and other necessary resources for modules are located.
-      CoreModule.engineResourcePaths = this.engineResourcePaths;
+      CoreModule.engineResourcePaths.rootDirectory = this.engineResourcePaths.rootDirectory;
       await CoreModule.loadWasm(["cvr", "dbr"]);
       this.cvr = await CaptureVisionRouter.createInstance();
     } catch (error) {
@@ -100,9 +88,8 @@ export class DBRWeb extends WebPlugin implements DBRPlugin {
     return {results:wrappedResults};
   }
 
-  private arrayBufferToBase64( buffer: number[] ):string {
+  private arrayBufferToBase64( bytes: Uint8Array ):string {
     var binary = '';
-    var bytes = new Uint8Array( buffer );
     var len = bytes.byteLength;
     for (var i = 0; i < len; i++) {
       binary += String.fromCharCode( bytes[ i ] );

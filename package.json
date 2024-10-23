@@ -84,8 +84,8 @@
   },
   "dependencies": {
     "dynamsoft-barcode-reader": "10.4.20",
-    "dynamsoft-capture-vision-router": "2.4.21",
-    "dynamsoft-core": "3.4.20",
+    "dynamsoft-capture-vision-router": "2.4.22",
+    "dynamsoft-core": "3.4.21",
     "dynamsoft-license": "3.4.21"
   }
 }

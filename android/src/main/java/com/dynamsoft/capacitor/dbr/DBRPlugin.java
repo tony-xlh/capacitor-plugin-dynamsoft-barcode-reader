@@ -3,10 +3,10 @@ package com.dynamsoft.capacitor.dbr;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.dynamsoft.core.basic_structures.CapturedResult;
 import com.dynamsoft.core.basic_structures.CapturedResultItem;
 import com.dynamsoft.cvr.CaptureVisionRouter;
 import com.dynamsoft.cvr.CaptureVisionRouterException;
+import com.dynamsoft.cvr.CapturedResult;
 import com.dynamsoft.cvr.EnumPresetTemplate;
 import com.dynamsoft.dbr.BarcodeResultItem;
 import com.dynamsoft.license.LicenseManager;
@@ -94,7 +94,7 @@ public class DBRPlugin extends Plugin {
                 call.reject(e.getMessage());
             }
         }else{
-            call.reject("DDN not initialized");
+            call.reject("DBR not initialized");
         }
     }
 
@@ -129,7 +129,7 @@ public class DBRPlugin extends Plugin {
                 call.reject(e.getMessage());
             }
         }else{
-            call.reject("DDN not initialized");
+            call.reject("DBR not initialized");
         }
     }
 }

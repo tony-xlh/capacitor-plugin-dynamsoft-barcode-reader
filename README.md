@@ -27,7 +27,7 @@ For Capacitor <= 5, use 1.x.
 
 | Product      | Android |    iOS | Web |
 | ----------- | ----------- | -----------  | -------  |
-| Dynamsoft Barcode Reader    | 10.0.20       | 10.0.20     | 10.0.20     |
+| Dynamsoft Barcode Reader    | 10.4.20       | 10.4.20     | 10.4.20     |
 
 ## Supported Barcode Symbologies
 
@@ -36,10 +36,14 @@ For Capacitor <= 5, use 1.x.
 * Code 93
 * Code 128
 * Codabar
+* EAN-2
+* EAN-5
 * EAN-8
 * EAN-13
 * UPC-A
 * UPC-E
+* UPC-2
+* UPC-5
 * Interleaved 2 of 5 (ITF)
 * Industrial 2 of 5 (Code 2 of 5 Industry, Standard 2 of 5, Code 2 of 5)
 * ITF-14 

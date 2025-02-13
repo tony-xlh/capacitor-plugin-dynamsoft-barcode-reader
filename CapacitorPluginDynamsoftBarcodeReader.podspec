@@ -16,6 +16,6 @@ Pod::Spec.new do |s|
   s.dependency 'Capacitor'
   s.static_framework = true
   s.dependency 'DynamsoftCameraEnhancer', '= 2.3.11'
-  s.dependency 'DynamsoftBarcodeReader', '= 9.6.10'
+  s.dependency 'DynamsoftBarcodeReader', '= 9.6.40'
   s.swift_version = '5.1'
 end

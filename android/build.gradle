@@ -56,7 +56,7 @@ rootProject.allprojects {
 }
 
 dependencies {
-    implementation 'com.dynamsoft:dynamsoftbarcodereaderbundle:10.4.2000'
+    implementation 'com.dynamsoft:dynamsoftbarcodereaderbundle:10.4.3001'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"

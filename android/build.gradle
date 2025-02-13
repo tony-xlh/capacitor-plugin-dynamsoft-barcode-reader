@@ -60,7 +60,7 @@ repositories {
 
 
 dependencies {
-    implementation 'com.dynamsoft:dynamsoftcameraenhancer:2.3.11@aar'
+    implementation 'com.dynamsoft:dynamsoftcameraenhancer:2.3.20@aar'
     implementation 'com.dynamsoft:dynamsoftbarcodereader:9.6.40@aar'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')

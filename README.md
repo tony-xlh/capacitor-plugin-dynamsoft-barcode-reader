@@ -19,6 +19,8 @@ npx cap sync
 
 ## Capacitor Versions
 
+For Capacitor 7, use 3.x.
+
 For Capacitor 6, use 2.x.
 
 For Capacitor <= 5, use 1.x.

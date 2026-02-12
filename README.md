@@ -4,6 +4,9 @@
 
 A capacitor plugin for [Dynamsoft Barcode Reader](https://www.dynamsoft.com/barcode-reader/overview/).
 
+> [!NOTE]
+> This repo is not actively maintained and the performance and camera control differences between the mobile native and the JavaScript platforms are now small. You can directly use the JavaScript SDK: https://github.com/Dynamsoft/barcode-reader-javascript-samples/tree/2f0a723e88e3271170672e61c214a3d1d7a31328/frameworks/capacitor
+
 ## Install
 
 ```bash
